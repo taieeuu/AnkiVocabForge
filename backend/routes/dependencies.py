@@ -41,9 +41,29 @@ def get_validated_settings(settings: dict) -> ValidatedSettings:
             }
         )
     
+    def _get_setting_value(values: dict, *keys: str, default: str) -> str:
+        for key in keys:
+            value = values.get(key)
+            if value is not None and str(value).strip():
+                return str(value).strip()
+        return default
+
     model = settings.get('model') or AI_MODEL
-    source_lang = settings.get('sourceLang', 'English')
-    target_lang = settings.get('language', 'Chinese')
+    source_lang = _get_setting_value(
+        settings,
+        'sourceLang',
+        'sourceLanguage',
+        'source_language',
+        default='English'
+    )
+    target_lang = _get_setting_value(
+        settings,
+        'language',
+        'targetLang',
+        'targetLanguage',
+        'target_language',
+        default='Chinese'
+    )
     
     return ValidatedSettings(
         api_key=api_key,

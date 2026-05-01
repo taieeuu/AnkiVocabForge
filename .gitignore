@@ -41,3 +41,4 @@ frontend/outputs/
 backend/outputs/
 
 **/__pycache__/
+/ref

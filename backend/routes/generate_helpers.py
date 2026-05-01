@@ -183,8 +183,28 @@ def determine_card_type(note_name: str) -> str:
 
 def get_language_settings(settings: Dict[str, Any]) -> tuple:
     """獲取語言設置"""
-    source_lang = settings.get('sourceLang', SOURCE_LANG)
-    target_lang = settings.get('language', TARGET_LANG)
+    def _get_setting_value(values: Dict[str, Any], *keys: str, default: str) -> str:
+        for key in keys:
+            value = values.get(key)
+            if value is not None and str(value).strip():
+                return str(value).strip()
+        return default
+
+    source_lang = _get_setting_value(
+        settings,
+        'sourceLang',
+        'sourceLanguage',
+        'source_language',
+        default=SOURCE_LANG
+    )
+    target_lang = _get_setting_value(
+        settings,
+        'language',
+        'targetLang',
+        'targetLanguage',
+        'target_language',
+        default=TARGET_LANG
+    )
     return source_lang, target_lang
 
 

@@ -28,22 +28,11 @@ load_dotenv(override=False)
 # 常數
 # =========================
 
-CONTENT_TYPES = [
-    "Word",
-    "Grammar"
-]
+CONTENT_TYPES = ["Word", "Grammar"]
 
-INPUT_MODES = [
-    "Article",
-    "Vocab",
-    "AI Generate"
-]
+INPUT_MODES = ["Article", "Vocab", "AI Generate"]
 
-ANKI_CARD_TYPES = [
-    "Basic",
-    "Cloze",
-    "Basic+Cloze"
-]
+ANKI_CARD_TYPES = ["Basic", "Cloze", "Basic+Cloze"]
 
 AI_MODELS = [
     "gpt-4o-mini",
@@ -56,6 +45,7 @@ BATCH_SIZE = 5
 # =========================
 # Function
 # =========================
+
 
 def _get(key: str, default: str) -> str:
     """從環境變數讀取配置，如果不存在則使用預設值"""
@@ -81,12 +71,18 @@ AI_MODEL: str = _get("AI_MODEL", "gpt-5-nano")
 
 # 輸出資料夾
 VOICE_DIR: str = str(_get("VOICE_DIR", str(OUTPUTS_DIR / "voice")))
-PASSAGE_IMAGE_DIR: str = str(_get("PASSAGE_IMAGE_DIR", str(OUTPUTS_DIR / "passage_images")))
-TRANSED_VOCAB_DIR: str = str(_get("TRANSED_VOCAB_DIR", str(OUTPUTS_DIR / "transed_vocab")))
+PASSAGE_IMAGE_DIR: str = str(
+    _get("PASSAGE_IMAGE_DIR", str(OUTPUTS_DIR / "passage_images"))
+)
+TRANSED_VOCAB_DIR: str = str(
+    _get("TRANSED_VOCAB_DIR", str(OUTPUTS_DIR / "transed_vocab"))
+)
 CONFIG_DIR: str = str(_get("CONFIG_DIR", str(ROOT_DIR / "config")))
 
 # Anki 資料庫路徑
-_DEFAULT_ANKI_DB = "/Users/taieeuu/Library/Application Support/Anki2/使用者 1/collection.anki2"
+_DEFAULT_ANKI_DB = (
+    "/Users/taieeuu/Library/Application Support/Anki2/使用者 1/collection.anki2"
+)
 ANKI_DB_PATH: str = _get("ANKI_DB_PATH", _DEFAULT_ANKI_DB)
 
 # OpenAI API Key
@@ -98,30 +94,30 @@ OPENAI_API_KEY: str = _get("OPENAI_API_KEY", "")
 # =========================
 
 BASIC_FIELDS = [
-    {'name': 'Word'}, 
-    {'name': 'Pos'},
-    {'name': 'Meaning'}, 
-    {'name': 'Synonyms'},
-    {'name': 'Ex1_ori'},
-    {'name': 'Ex1_trans'},
-    {'name': 'Ex2_ori'},
-    {'name': 'Ex2_trans'},
-    {'name': 'Audio'},
-    {'name': 'Hint'},
+    {"name": "Word"},
+    {"name": "Pos"},
+    {"name": "Meaning"},
+    {"name": "Synonyms"},
+    {"name": "Ex1_ori"},
+    {"name": "Ex1_trans"},
+    {"name": "Ex2_ori"},
+    {"name": "Ex2_trans"},
+    {"name": "Audio"},
+    {"name": "Hint"},
 ]
 
 BASIC_TEMPLATES = [
     {
-        'name': 'Card 1',
-        'qfmt': '''
+        "name": "Card 1",
+        "qfmt": """
                 <div>
                     <div>{{Word}} <span style="color:gray;">({{Pos}})</span></div>
                     <br>
                     <div>{{Hint}}</div>
                     <div>{{Audio}}</div>
                 </div>
-                ''',
-        'afmt': '''
+                """,
+        "afmt": """
                 <div>
                     <div>{{Word}} <span style="color:gray;">({{Pos}})</span></div>
                     <br>
@@ -142,18 +138,18 @@ BASIC_TEMPLATES = [
                         {{Ex2_ori}}<br><span style="color:gray;">{{Ex2_trans}}</span>
                     </div>
                 </div>
-                ''',
+                """,
     },
     {
-        'name': 'Card 2 (Reverse)',
-        'qfmt': '''
+        "name": "Card 2 (Reverse)",
+        "qfmt": """
                 <div>
                     <div>{{Meaning}} <span style="color:gray;">({{Pos}})</span></div>
                     <br>
                     <div>{{Hint}}</div>
                 </div>
-                ''',
-        'afmt': '''
+                """,
+        "afmt": """
                 <div>
                     <div>{{Meaning}} <span style="color:gray;">({{Pos}})</span></div>
                     <br>
@@ -179,8 +175,8 @@ BASIC_TEMPLATES = [
                         {{Audio}}
                     </div>
                 </div>
-                ''',
-    }
+                """,
+    },
 ]
 
 BASIC_CSS = """
@@ -191,30 +187,30 @@ BASIC_CSS = """
 """
 
 CLOZE_FIELDS = [
-    {'name': 'Text'},       # Cloze 格式的文本（包含兩個例句和翻譯）
-    {'name': 'Word'},     
-    {'name': 'Pos'},      
-    {'name': 'Meaning'},  
-    {'name': 'Synonyms'}, 
-    {'name': 'Ex1_ori'},  
-    {'name': 'Ex1_trans'},
-    {'name': 'Ex2_ori'},  
-    {'name': 'Ex2_trans'},
-    {'name': 'Audio'},    
-    {'name': 'Hint'},     
+    {"name": "Text"},  # Cloze 格式的文本（包含兩個例句和翻譯）
+    {"name": "Word"},
+    {"name": "Pos"},
+    {"name": "Meaning"},
+    {"name": "Synonyms"},
+    {"name": "Ex1_ori"},
+    {"name": "Ex1_trans"},
+    {"name": "Ex2_ori"},
+    {"name": "Ex2_trans"},
+    {"name": "Audio"},
+    {"name": "Hint"},
 ]
 
 CLOZE_TEMPLATES = [
     {
-        'name': 'Cloze',
-        'qfmt': '''
+        "name": "Cloze",
+        "qfmt": """
                 <div>
                     <div>{{type:cloze:Text}}</div>
                     <span style="color:gray; font-weight: normal;">{{Pos}}</span>
                     <div style="white-space: pre-line;">{{cloze:Text}}</div>
                 </div>
-                ''',
-        'afmt': '''
+                """,
+        "afmt": """
                 <div>
                     <span style="color:gray; font-weight: normal;">{{Pos}}</span>
                     <div style="font-size: 18px; font-weight: bold; margin-bottom: 1em;">{{Meaning}}</div>
@@ -224,30 +220,30 @@ CLOZE_TEMPLATES = [
                     <div>{{type:cloze:Text}}</div>
                     <div style="white-space: pre-line;">{{cloze:Text}}</div>
                 </div>
-                '''
+                """,
     }
 ]
 
 GRAMMAR_FIELDS = [
-    {'name': 'Grammar'},
-    {'name': 'Usage'},      
-    {'name': 'Meaning'},  
-    {'name': 'Contrast'}, 
-    {'name': 'Ex1_ori'},  
-    {'name': 'Ex1_trans'},
-    {'name': 'Ex2_ori'},  
-    {'name': 'Ex2_trans'},
+    {"name": "Grammar"},
+    {"name": "Usage"},
+    {"name": "Meaning"},
+    {"name": "Contrast"},
+    {"name": "Ex1_ori"},
+    {"name": "Ex1_trans"},
+    {"name": "Ex2_ori"},
+    {"name": "Ex2_trans"},
 ]
 
 BASIC_GRAMMAR_TEMPLATES = [
     {
-        'name': 'Grammar Card 1',
-        'qfmt': '''
+        "name": "Grammar Card 1",
+        "qfmt": """
                 <div>
                     <div><b>{{Grammar}}</b></div>
                 </div>
-                ''',
-        'afmt': '''
+                """,
+        "afmt": """
                 <div>
                     <div><b>{{Grammar}}</b></div>
                     <hr id=answer>
@@ -273,7 +269,7 @@ BASIC_GRAMMAR_TEMPLATES = [
                         <span style="color:gray;">{{Ex2_trans}}</span>
                     </div>
                 </div>
-                ''',
+                """,
     },
     # {
     #     'name': 'Grammar Card 2 (Reverse)',
@@ -334,7 +330,7 @@ PROMPT_EN_PASSAGE_VOCAB_QUESTIONS = """
 - word: 單字
 - pos: 單字的詞性 (請使用 {source_language} 常見且標準的詞性名稱，並使用 {target_language} 回答)
 - meaning: {target_language} 意思
-- synonyms: 同義詞（若有的話給 3-5 個並附上 {target_language} 意思，全部以字串形式呈現）
+- synonyms: 單字的同義詞（若有的話給 3-5 個並附上 {target_language} 意思，全部以字串形式呈現）
 - ex1_ori: 第一句 {source_language} 例句（使用該單字，且不要創造超出文章內容的額外背景）
 - ex1_trans: 第一句例句的 {target_language} 翻譯
 - ex2_ori: 第二句 {source_language} 例句（使用該單字，且不要創造超出文章內容的額外背景）
@@ -366,7 +362,7 @@ PROMPT_EN_VOCAB = """
 - word: 單字
 - pos: 單字的詞性 (請使用 {source_language} 常見且標準的詞性名稱，並使用 {target_language} 回答)
 - meaning: 單字在 {target_language} 的意義
-- synonyms: 同義詞（若有的話給 3-5 個，並附上 {target_language} 意思，全部以字串形式呈現）
+- synonyms: 單字的同義詞（若有的話給 3-5 個，並附上 {target_language} 意思，全部以字串形式呈現）
 - ex1_ori: 第一句 {source_language} 例句（使用該單字，且盡量貼近目標相關內容）
 - ex1_trans: 第一句例句的 {target_language} 翻譯
 - ex2_ori: 第二句 {source_language} 例句（使用該單字，且盡量貼近目標相關內容）
@@ -397,7 +393,7 @@ PROMPT_AI_GENERATE = """
 - word: 單字
 - pos: 單字的詞性 (請使用 {source_language} 常見且標準的詞性名稱，並使用 {target_language} 回答)
 - meaning: 單字在 {target_language} 的意義
-- synonyms: 同義詞（若有的話給 3-5 個，並附上它們在 {target_language} 的意思；全部以字串形式呈現）
+- synonyms: 單字的同義詞（若有的話給 3-5 個，並附上它們在 {target_language} 的意思；全部以字串形式呈現）
 - ex1_ori: 第一句 {source_language} 例句（使用該單字，難度與學習目標一致，不得添加無關背景）
 - ex1_trans: 第一句例句在 {target_language} 的翻譯
 - ex2_ori: 第二句 {source_language} 例句（使用該單字，難度與學習目標一致，不得添加無關背景）
@@ -434,8 +430,18 @@ WORD_SCHEMA = {
                 "ex2_trans": {"type": "string"},
                 "hint": {"type": "string"},
             },
-            "required": ["word", "pos", "meaning", "synonyms", "ex1_ori", "ex1_trans", "ex2_ori", "ex2_trans", "hint"]
-        }
+            "required": [
+                "word",
+                "pos",
+                "meaning",
+                "synonyms",
+                "ex1_ori",
+                "ex1_trans",
+                "ex2_ori",
+                "ex2_trans",
+                "hint",
+            ],
+        },
     }
 }
 
@@ -450,7 +456,7 @@ GRAMMAR_PROMPT = """
 
 - grammar：該文法的標準句型結構公式；請勿省略文法句型的變化。
 - usage：此文法的實際使用時機與適用條件，需具體描述何時選用此結構，避免抽象或模糊表述（使用 {source_language}）。
-- meaning：此文法的意思（使用 {source_language}）。
+- meaning：此文法的意思（使用 {target_language}）。
 - contrast：contrast 必須明確指出「相似文法」與「本結構」的選擇判斷依據，並說明在何種語境或條件下只能使用其中一者，而非僅描述表面差異。
 - ex1_ori：第一句 {source_language} 例句，必須正確且自然地使用該文法，語句簡潔，難度符合學習目標。
 - ex1_trans：第一句例句的 {target_language} 專業且自然的翻譯。
@@ -494,7 +500,8 @@ GRAMMAR_SCHEMA = {
                 "ex1_trans",
                 "ex2_ori",
                 "ex2_trans",
-            ]
-        }
+            ],
+        },
     }
 }
+

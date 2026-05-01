@@ -71,8 +71,8 @@ export default function App() {
   const [settings, setSettings] = useState<SettingsType>({
     apiKey: '',
     model: 'gpt-4o-mini',
-    language: 'Enlish',
-    sourceLanguage: 'Chinese',
+    language: 'Chinese',
+    sourceLanguage: 'English',
     audio: { enabled: false, voice: 'alloy' }
   });
 

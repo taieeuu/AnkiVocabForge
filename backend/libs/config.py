@@ -110,80 +110,185 @@ BASIC_TEMPLATES = [
     {
         "name": "Card 1",
         "qfmt": """
-                <div>
-                    <div>{{Word}} <span style="color:gray;">({{Pos}})</span></div>
-                    <br>
-                    <div>{{Hint}}</div>
-                    <div>{{Audio}}</div>
-                </div>
-                """,
+<div class="heading">{{Word}}<span class="pos-badge">{{Pos}}</span></div>
+{{#Hint}}<div class="hint">{{Hint}}</div>{{/Hint}}
+{{#Audio}}<div class="section">{{Audio}}</div>{{/Audio}}
+""",
         "afmt": """
-                <div>
-                    <div>{{Word}} <span style="color:gray;">({{Pos}})</span></div>
-                    <br>
-                    <div>{{Hint}}</div>
-                    <div>{{Audio}}</div>
-                    <hr id=answer>
-                    <div><b>{{Meaning}}</b></div>
-                    <br>
-                    <div>
-                        <span style="color:gray;">{{Synonyms}}</span>
-                    </div>
-                    <br>
-                    <div>
-                        {{Ex1_ori}}<br><span style="color:gray;">{{Ex1_trans}}</span>
-                    </div>
-                    <br>
-                    <div>
-                        {{Ex2_ori}}<br><span style="color:gray;">{{Ex2_trans}}</span>
-                    </div>
-                </div>
-                """,
+<div class="heading">{{Word}}<span class="pos-badge">{{Pos}}</span></div>
+{{#Hint}}<div class="hint">{{Hint}}</div>{{/Hint}}
+{{#Audio}}<div class="section">{{Audio}}</div>{{/Audio}}
+<hr id=answer>
+<div class="meaning">{{Meaning}}</div>
+{{#Synonyms}}<div class="synonyms">{{Synonyms}}</div>{{/Synonyms}}
+{{#Ex1_ori}}
+<div class="example-block">
+    <div class="example-ori">{{Ex1_ori}}</div>
+    <div class="example-trans">{{Ex1_trans}}</div>
+</div>
+{{/Ex1_ori}}
+{{#Ex2_ori}}
+<div class="example-block">
+    <div class="example-ori">{{Ex2_ori}}</div>
+    <div class="example-trans">{{Ex2_trans}}</div>
+</div>
+{{/Ex2_ori}}
+""",
     },
     {
         "name": "Card 2 (Reverse)",
         "qfmt": """
-                <div>
-                    <div>{{Meaning}} <span style="color:gray;">({{Pos}})</span></div>
-                    <br>
-                    <div>{{Hint}}</div>
-                </div>
-                """,
+<div class="heading">{{Meaning}}<span class="pos-badge">{{Pos}}</span></div>
+{{#Hint}}<div class="hint">{{Hint}}</div>{{/Hint}}
+""",
         "afmt": """
-                <div>
-                    <div>{{Meaning}} <span style="color:gray;">({{Pos}})</span></div>
-                    <br>
-                    <div>{{Hint}}</div>
-                    <hr id=answer>
-                    <div>
-                        <b>{{Word}}</b>
-                    </div>
-                    <br>
-                    <div>
-                        <span style="color:gray;">{{Synonyms}}</span>
-                    </div>
-                    <br>
-                    <div>
-                        {{Ex1_ori}}<br><span style="color:gray;">{{Ex1_trans}}</span>
-                    </div>
-                    <br>
-                    <div>
-                        {{Ex2_ori}}<br><span style="color:gray;">{{Ex2_trans}}</span>
-                    </div>
-                    <br>
-                    <div>
-                        {{Audio}}
-                    </div>
-                </div>
-                """,
+<div class="heading">{{Meaning}}<span class="pos-badge">{{Pos}}</span></div>
+{{#Hint}}<div class="hint">{{Hint}}</div>{{/Hint}}
+<hr id=answer>
+<div class="meaning">{{Word}}</div>
+{{#Synonyms}}<div class="synonyms">{{Synonyms}}</div>{{/Synonyms}}
+{{#Ex1_ori}}
+<div class="example-block">
+    <div class="example-ori">{{Ex1_ori}}</div>
+    <div class="example-trans">{{Ex1_trans}}</div>
+</div>
+{{/Ex1_ori}}
+{{#Ex2_ori}}
+<div class="example-block">
+    <div class="example-ori">{{Ex2_ori}}</div>
+    <div class="example-trans">{{Ex2_trans}}</div>
+</div>
+{{/Ex2_ori}}
+{{#Audio}}<div class="section">{{Audio}}</div>{{/Audio}}
+""",
     },
 ]
 
 BASIC_CSS = """
-    .card { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", sans-serif; font-size: 22px; }
-    .hint { color: #888; margin-top: .5em; }
-    .extra { margin-top: 1em; font-size: 18px; line-height: 1.5; }
-    .src { margin-top: .5em; font-size: 14px; color: #666; }
+.card {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", sans-serif;
+    font-size: 20px;
+    color: #1e293b;
+    background: #ffffff;
+    padding: 32px;
+    line-height: 1.6;
+}
+
+.heading {
+    font-size: 30px;
+    font-weight: 700;
+    color: #1e293b;
+    margin-bottom: 4px;
+}
+
+.pos-badge {
+    display: inline-block;
+    background: #f1f5f9;
+    color: #64748b;
+    font-size: 14px;
+    font-weight: normal;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-left: 8px;
+    vertical-align: middle;
+}
+
+.hint {
+    color: #64748b;
+    font-size: 18px;
+    margin-top: 4px;
+}
+
+.meaning {
+    font-size: 24px;
+    font-weight: 700;
+    color: #2563eb;
+    margin-top: 4px;
+    margin-bottom: 4px;
+}
+
+.synonyms {
+    color: #64748b;
+    font-size: 16px;
+    margin-top: 4px;
+}
+
+.section {
+    margin-top: 12px;
+}
+
+.example-block {
+    border-left: 2px solid #e2e8f0;
+    padding-left: 12px;
+    margin-top: 12px;
+}
+
+.example-ori {
+    color: #334155;
+    font-size: 16px;
+}
+
+.example-trans {
+    color: #64748b;
+    font-size: 14px;
+    margin-top: 4px;
+}
+
+.info-block {
+    border-radius: 6px;
+    padding: 8px 12px;
+    margin-top: 12px;
+}
+
+.info-label {
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 4px;
+}
+
+.info-content {
+    font-size: 15px;
+    font-weight: normal;
+    color: #334155;
+}
+
+.info-block-usage {
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+}
+
+.info-block-usage .info-label { color: #d97706; }
+
+.info-block-contrast {
+    background: #faf5ff;
+    border: 1px solid #e9d5ff;
+}
+
+.info-block-contrast .info-label { color: #9333ea; }
+
+/* Night mode */
+.card.night_mode {
+    color: #e2e8f0;
+    background: #1e293b;
+}
+
+.card.night_mode .heading   { color: #f1f5f9; }
+.card.night_mode .pos-badge { background: #334155; color: #94a3b8; }
+.card.night_mode .hint      { color: #94a3b8; }
+.card.night_mode .meaning   { color: #60a5fa; }
+.card.night_mode .synonyms  { color: #94a3b8; }
+
+.card.night_mode .example-block           { border-left-color: #334155; }
+.card.night_mode .example-ori             { color: #e2e8f0; }
+.card.night_mode .example-trans           { color: #94a3b8; }
+.card.night_mode .info-content            { color: #cbd5e1; }
+
+.card.night_mode .info-block-usage        { background: rgba(120,53,15,0.2);  border-color: rgba(146,64,14,0.3); }
+.card.night_mode .info-block-usage .info-label    { color: #fbbf24; }
+.card.night_mode .info-block-contrast     { background: rgba(88,28,135,0.2);  border-color: rgba(107,33,168,0.3); }
+.card.night_mode .info-block-contrast .info-label { color: #c084fc; }
 """
 
 CLOZE_FIELDS = [
@@ -204,23 +309,15 @@ CLOZE_TEMPLATES = [
     {
         "name": "Cloze",
         "qfmt": """
-                <div>
-                    <div>{{type:cloze:Text}}</div>
-                    <span style="color:gray; font-weight: normal;">{{Pos}}</span>
-                    <div style="white-space: pre-line;">{{cloze:Text}}</div>
-                </div>
-                """,
+{{#Pos}}<span class="pos-badge" style="margin-left:0;">{{Pos}}</span>{{/Pos}}
+<div class="section" style="white-space: pre-line; line-height: 1.8;">{{cloze:Text}}</div>
+""",
         "afmt": """
-                <div>
-                    <span style="color:gray; font-weight: normal;">{{Pos}}</span>
-                    <div style="font-size: 18px; font-weight: bold; margin-bottom: 1em;">{{Meaning}}</div>
-                </div>
-                <hr id=answer>
-                <div>
-                    <div>{{type:cloze:Text}}</div>
-                    <div style="white-space: pre-line;">{{cloze:Text}}</div>
-                </div>
-                """,
+{{#Pos}}<span class="pos-badge" style="margin-left:0;">{{Pos}}</span>{{/Pos}}
+<div class="meaning">{{Meaning}}</div>
+<hr id=answer>
+<div class="section" style="white-space: pre-line; line-height: 1.8;">{{cloze:Text}}</div>
+""",
     }
 ]
 
@@ -239,73 +336,38 @@ BASIC_GRAMMAR_TEMPLATES = [
     {
         "name": "Grammar Card 1",
         "qfmt": """
-                <div>
-                    <div><b>{{Grammar}}</b></div>
-                </div>
-                """,
+<div class="heading">{{Grammar}}</div>
+""",
         "afmt": """
-                <div>
-                    <div><b>{{Grammar}}</b></div>
-                    <hr id=answer>
-                    <div><b>{{Meaning}}</b></div>
-                    <br>
-                    <div class="extra">
-                        <b>Usage</b><br>
-                        {{Usage}}
-                    </div>
-                    <br>
-                    <div class="extra">
-                        <b>Contrast</b><br>
-                        <span style="color:gray;">{{Contrast}}</span>
-                    </div>
-                    <br>
-                    <div class="extra">
-                        {{Ex1_ori}}<br>
-                        <span style="color:gray;">{{Ex1_trans}}</span>
-                    </div>
-                    <br>
-                    <div class="extra">
-                        {{Ex2_ori}}<br>
-                        <span style="color:gray;">{{Ex2_trans}}</span>
-                    </div>
-                </div>
-                """,
+<div class="heading">{{Grammar}}</div>
+<hr id=answer>
+<div class="meaning">{{Meaning}}</div>
+{{#Usage}}
+<div class="info-block info-block-usage">
+    <div class="info-label">Usage</div>
+    <div class="info-content">{{Usage}}</div>
+</div>
+{{/Usage}}
+{{#Contrast}}
+<div class="info-block info-block-contrast">
+    <div class="info-label">Contrast</div>
+    <div class="info-content">{{Contrast}}</div>
+</div>
+{{/Contrast}}
+{{#Ex1_ori}}
+<div class="example-block">
+    <div class="example-ori">{{Ex1_ori}}</div>
+    <div class="example-trans">{{Ex1_trans}}</div>
+</div>
+{{/Ex1_ori}}
+{{#Ex2_ori}}
+<div class="example-block">
+    <div class="example-ori">{{Ex2_ori}}</div>
+    <div class="example-trans">{{Ex2_trans}}</div>
+</div>
+{{/Ex2_ori}}
+""",
     },
-    # {
-    #     'name': 'Grammar Card 2 (Reverse)',
-    #     'qfmt': '''
-    #             <div>
-    #                 <div><b>Usage</b></div>
-    #                 <br>
-    #                 <div>{{Usage}}</div>
-    #                 <br>
-    #                 <div class="hint">{{Hint}}</div>
-    #             </div>
-    #             ''',
-    #     'afmt': '''
-    #             <div>
-    #                 <div><b>Usage</b></div>
-    #                 <br>
-    #                 <div>{{Usage}}</div>
-    #                 <br>
-    #                 <div class="hint">{{Hint}}</div>
-    #                 <hr id=answer>
-    #                 <div><b>{{Grammar}}</b></div>
-    #                 <br>
-    #                 <div style="color:gray;">{{Pattern}}</div>
-    #                 <br>
-    #                 <div class="extra">
-    #                     {{Ex1_ori}}<br>
-    #                     <span style="color:gray;">{{Ex1_trans}}</span>
-    #                 </div>
-    #                 <br>
-    #                 <div class="extra">
-    #                     {{Ex2_ori}}<br>
-    #                     <span style="color:gray;">{{Ex2_trans}}</span>
-    #                 </div>
-    #             </div>
-    #             ''',
-    # }
 ]
 
 # =========================
@@ -413,38 +475,6 @@ PROMPT_AI_GENERATE = """
 10. **最終輸出請以 JSON 陣列格式呈現，每個單字為獨立 JSON 物件。**
 """
 
-WORD_SCHEMA = {
-    "vocab": {
-        "type": "array",
-        "items": {
-            "type": "object",
-            "additionalProperties": False,
-            "properties": {
-                "word": {"type": "string"},
-                "pos": {"type": "string"},
-                "meaning": {"type": "string"},
-                "synonyms": {"type": "string"},
-                "ex1_ori": {"type": "string"},
-                "ex1_trans": {"type": "string"},
-                "ex2_ori": {"type": "string"},
-                "ex2_trans": {"type": "string"},
-                "hint": {"type": "string"},
-            },
-            "required": [
-                "word",
-                "pos",
-                "meaning",
-                "synonyms",
-                "ex1_ori",
-                "ex1_trans",
-                "ex2_ori",
-                "ex2_trans",
-                "hint",
-            ],
-        },
-    }
-}
-
 GRAMMAR_PROMPT = """
 {goal_prompt_section}
 
@@ -475,33 +505,4 @@ GRAMMAR_PROMPT = """
 9. 請勿遺漏任何欄位，所有欄位皆必須出現在每一個 JSON 物件中，且欄位名稱需完全一致。
 """
 
-GRAMMAR_SCHEMA = {
-    "grammar": {
-        "type": "array",
-        "items": {
-            "type": "object",
-            "additionalProperties": False,
-            "properties": {
-                "grammar": {"type": "string"},
-                "usage": {"type": "string"},
-                "meaning": {"type": "string"},
-                "contrast": {"type": "string"},
-                "ex1_ori": {"type": "string"},
-                "ex1_trans": {"type": "string"},
-                "ex2_ori": {"type": "string"},
-                "ex2_trans": {"type": "string"},
-            },
-            "required": [
-                "grammar",
-                "usage",
-                "meaning",
-                "contrast",
-                "ex1_ori",
-                "ex1_trans",
-                "ex2_ori",
-                "ex2_trans",
-            ],
-        },
-    }
-}
 

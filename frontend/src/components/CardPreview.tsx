@@ -7,429 +7,243 @@ interface CardPreviewProps {
   noteType?: 'basic' | 'cloze';
 }
 
+const PosBadge = ({ pos }: { pos?: string }) =>
+    pos ? (
+        <span className="inline-block align-middle ml-2 bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 text-sm px-2 py-0.5 rounded-md font-normal">
+            {pos}
+        </span>
+    ) : null;
+
+const ExampleBlock = ({ ori, trans }: { ori?: string; trans?: string }) =>
+    ori ? (
+        <div className="border-l-2 border-slate-200 dark:border-slate-600 pl-3 space-y-1">
+            <div className="text-slate-700 dark:text-slate-200 text-base">{ori}</div>
+            {trans && <div className="text-slate-500 dark:text-slate-400 text-sm">{trans}</div>}
+        </div>
+    ) : null;
+
+const InfoBlock = ({ label, content, color }: { label: string; content?: string; color: 'amber' | 'purple' }) => {
+    if (!content) return null;
+    const styles = {
+        amber: 'bg-amber-50 dark:bg-amber-900/20 border-amber-100 dark:border-amber-800/30 text-amber-600 dark:text-amber-400',
+        purple: 'bg-purple-50 dark:bg-purple-900/20 border-purple-100 dark:border-purple-800/30 text-purple-600 dark:text-purple-400',
+    };
+    return (
+        <div className={`border rounded-lg px-3 py-2 ${styles[color]}`}>
+            <div className="text-xs font-semibold uppercase tracking-wide mb-1">{label}</div>
+            <div className="text-slate-700 dark:text-slate-300 text-sm font-normal">{content}</div>
+        </div>
+    );
+};
+
 export const CardPreview: React.FC<CardPreviewProps> = ({ data, noteType = 'basic' }) => {
     const cards: Card[] = JSON.parse(data || "[]");
     const [currentIndex, setCurrentIndex] = useState(0);
     const [isFlipped, setIsFlipped] = useState(false);
-    const [cardType, setCardType] = useState<'card1' | 'card2'>('card1'); // For Basic: Card 1 or Card 2 (Reverse)
+    const [cardType, setCardType] = useState<'card1' | 'card2'>('card1');
 
     if (cards.length === 0) return <div className="text-slate-500 text-center py-10">No data to preview</div>;
 
     const currentCard = cards[currentIndex];
-    
-    // 檢測卡片類型：如果有 grammar 字段，則是文法卡片
     const isGrammarCard = currentCard.grammar !== undefined;
 
-    const nextCard = () => {
-        setIsFlipped(false);
-        setCurrentIndex((prev) => (prev + 1) % cards.length);
-    };
+    const nextCard = () => { setIsFlipped(false); setCurrentIndex((prev) => (prev + 1) % cards.length); };
+    const prevCard = () => { setIsFlipped(false); setCurrentIndex((prev) => (prev - 1 + cards.length) % cards.length); };
+    const toggleFlip = () => setIsFlipped(!isFlipped);
 
-    const prevCard = () => {
-        setIsFlipped(false);
-        setCurrentIndex((prev) => (prev - 1 + cards.length) % cards.length);
-    };
+    const exampleSection = (ex1_ori?: string, ex1_trans?: string, ex2_ori?: string, ex2_trans?: string) => (
+        (ex1_ori || ex2_ori) ? (
+            <div className="space-y-3 pt-1">
+                <ExampleBlock ori={ex1_ori} trans={ex1_trans} />
+                <ExampleBlock ori={ex2_ori} trans={ex2_trans} />
+            </div>
+        ) : null
+    );
 
-    const toggleFlip = () => {
-        setIsFlipped(!isFlipped);
-    };
-
-    // Render Basic Card 1 (Word -> Meaning)
     const renderBasicCard1 = () => {
-        if (!isFlipped) {
-            // Front: Word, Pos, Hint, Audio
-            return (
-                <div className="p-8">
-                    <div className="text-3xl font-bold text-slate-800 dark:text-white mb-2">
-                        {currentCard.word || ''} <span className="text-gray-500 text-xl">({currentCard.pos || ''})</span>
-                    </div>
-                    <br />
-                    <div className="text-slate-600 dark:text-slate-300">{currentCard.hint || ''}</div>
-                    {currentCard.audio && (
-                        <div className="mt-4 text-sm text-slate-500">🔊 Audio: {currentCard.audio}</div>
-                    )}
+        const front = (
+            <div className="space-y-3">
+                <div className="text-3xl font-bold text-slate-800 dark:text-white">
+                    {currentCard.word}<PosBadge pos={currentCard.pos} />
                 </div>
-            );
-        } else {
-            // Back: Word, Pos, Hint, Audio + Meaning, Synonyms, Ex1, Ex2
-            return (
-                <div className="p-8">
-                    <div className="text-3xl font-bold text-slate-800 dark:text-white mb-2">
-                        {currentCard.word || ''} <span className="text-gray-500 text-xl">({currentCard.pos || ''})</span>
-                    </div>
-                    <br />
-                    <div className="text-slate-600 dark:text-slate-300">{currentCard.hint || ''}</div>
-                    {currentCard.audio && (
-                        <div className="mt-4 text-sm text-slate-500">🔊 Audio: {currentCard.audio}</div>
-                    )}
-                    <hr className="my-4 border-slate-300 dark:border-slate-600" id="answer" />
-                    <div className="text-2xl font-bold text-slate-800 dark:text-white mb-4">
-                        {currentCard.meaning || ''}
-                    </div>
-                    <br />
-                    {currentCard.synonyms && (
-                        <>
-                            <div className="text-slate-500 dark:text-slate-400 mb-4">
-                                {currentCard.synonyms}
-                            </div>
-                            <br />
-                        </>
-                    )}
-                    <div className="mb-4">
-                        <div className="text-slate-700 dark:text-slate-200">{currentCard.ex1_ori || ''}</div>
-                        <div className="text-slate-500 dark:text-slate-400">{currentCard.ex1_trans || ''}</div>
-                    </div>
-                    <br />
-                    <div>
-                        <div className="text-slate-700 dark:text-slate-200">{currentCard.ex2_ori || ''}</div>
-                        <div className="text-slate-500 dark:text-slate-400">{currentCard.ex2_trans || ''}</div>
-                    </div>
+                {currentCard.hint && <div className="text-slate-500 dark:text-slate-400">{currentCard.hint}</div>}
+                {currentCard.audio && <div className="text-sm text-slate-400">🔊 {currentCard.audio}</div>}
+            </div>
+        );
+        const back = (
+            <div className="space-y-4">
+                <div className="text-3xl font-bold text-slate-800 dark:text-white">
+                    {currentCard.word}<PosBadge pos={currentCard.pos} />
                 </div>
-            );
-        }
+                {currentCard.hint && <div className="text-slate-500 dark:text-slate-400">{currentCard.hint}</div>}
+                {currentCard.audio && <div className="text-sm text-slate-400">🔊 {currentCard.audio}</div>}
+                <hr className="border-slate-200 dark:border-slate-600" />
+                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{currentCard.meaning}</div>
+                {currentCard.synonyms && <div className="text-slate-500 dark:text-slate-400 text-sm">{currentCard.synonyms}</div>}
+                {exampleSection(currentCard.ex1_ori, currentCard.ex1_trans, currentCard.ex2_ori, currentCard.ex2_trans)}
+            </div>
+        );
+        return isFlipped ? back : front;
     };
 
-    // Render Basic Card 2 (Reverse: Meaning -> Word)
     const renderBasicCard2 = () => {
-        if (!isFlipped) {
-            // Front: Meaning, Pos, Hint
-            return (
-                <div className="p-8">
-                    <div className="text-3xl font-bold text-slate-800 dark:text-white mb-2">
-                        {currentCard.meaning || ''} <span className="text-gray-500 text-xl">({currentCard.pos || ''})</span>
-                    </div>
-                    <br />
-                    <div className="text-slate-600 dark:text-slate-300">{currentCard.hint || ''}</div>
+        const front = (
+            <div className="space-y-3">
+                <div className="text-3xl font-bold text-slate-800 dark:text-white">
+                    {currentCard.meaning}<PosBadge pos={currentCard.pos} />
                 </div>
-            );
-        } else {
-            // Back: Meaning, Pos, Hint + Word, Synonyms, Ex1, Ex2, Audio
-            return (
-                <div className="p-8">
-                    <div className="text-3xl font-bold text-slate-800 dark:text-white mb-2">
-                        {currentCard.meaning || ''} <span className="text-gray-500 text-xl">({currentCard.pos || ''})</span>
-                    </div>
-                    <br />
-                    <div className="text-slate-600 dark:text-slate-300">{currentCard.hint || ''}</div>
-                    <hr className="my-4 border-slate-300 dark:border-slate-600" id="answer" />
-                    <div className="text-2xl font-bold text-slate-800 dark:text-white mb-4">
-                        {currentCard.word || ''}
-                    </div>
-                    <br />
-                    {currentCard.synonyms && (
-                        <>
-                            <div className="text-slate-500 dark:text-slate-400 mb-4">
-                                {currentCard.synonyms}
-                            </div>
-                            <br />
-                        </>
-                    )}
-                    <div className="mb-4">
-                        <div className="text-slate-700 dark:text-slate-200">{currentCard.ex1_ori || ''}</div>
-                        <div className="text-slate-500 dark:text-slate-400">{currentCard.ex1_trans || ''}</div>
-                    </div>
-                    <br />
-                    <div className="mb-4">
-                        <div className="text-slate-700 dark:text-slate-200">{currentCard.ex2_ori || ''}</div>
-                        <div className="text-slate-500 dark:text-slate-400">{currentCard.ex2_trans || ''}</div>
-                    </div>
-                    <br />
-                    {currentCard.audio && (
-                        <div className="text-sm text-slate-500">🔊 Audio: {currentCard.audio}</div>
-                    )}
+                {currentCard.hint && <div className="text-slate-500 dark:text-slate-400">{currentCard.hint}</div>}
+            </div>
+        );
+        const back = (
+            <div className="space-y-4">
+                <div className="text-3xl font-bold text-slate-800 dark:text-white">
+                    {currentCard.meaning}<PosBadge pos={currentCard.pos} />
                 </div>
-            );
-        }
+                {currentCard.hint && <div className="text-slate-500 dark:text-slate-400">{currentCard.hint}</div>}
+                <hr className="border-slate-200 dark:border-slate-600" />
+                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{currentCard.word}</div>
+                {currentCard.synonyms && <div className="text-slate-500 dark:text-slate-400 text-sm">{currentCard.synonyms}</div>}
+                {exampleSection(currentCard.ex1_ori, currentCard.ex1_trans, currentCard.ex2_ori, currentCard.ex2_trans)}
+                {currentCard.audio && <div className="text-sm text-slate-400">🔊 {currentCard.audio}</div>}
+            </div>
+        );
+        return isFlipped ? back : front;
     };
 
-    // Render Grammar Card 1 (Grammar -> Meaning)
-    const renderGrammarCard1 = () => {
-        if (!isFlipped) {
-            // Front: Grammar, Pattern, Hint
-            return (
-                <div className="p-8">
-                    <div className="text-3xl font-bold text-slate-800 dark:text-white mb-2">
-                        {currentCard.grammar || ''}
-                    </div>
-                    <br />
-                    {currentCard.pattern && (
-                        <>
-                            <div className="text-slate-500 dark:text-slate-400 text-lg mb-2">
-                                {currentCard.pattern}
-                            </div>
-                            <br />
-                        </>
-                    )}
-                    <div className="text-slate-600 dark:text-slate-300">{currentCard.hint || ''}</div>
+    const grammarFront = (heading: string) => (
+        <div className="space-y-3">
+            <div className="text-3xl font-bold text-slate-800 dark:text-white">{heading}</div>
+            {currentCard.pattern && (
+                <div className="inline-block font-mono text-base bg-slate-100 dark:bg-slate-700/60 text-slate-600 dark:text-slate-300 px-3 py-1.5 rounded-lg">
+                    {currentCard.pattern}
                 </div>
-            );
-        } else {
-            // Back: Grammar, Pattern, Hint + Meaning, Usage, Contrast, Ex1, Ex2
-            return (
-                <div className="p-8">
-                    <div className="text-3xl font-bold text-slate-800 dark:text-white mb-2">
-                        {currentCard.grammar || ''}
-                    </div>
-                    <br />
-                    {currentCard.pattern && (
-                        <>
-                            <div className="text-slate-500 dark:text-slate-400 text-lg mb-2">
-                                {currentCard.pattern}
-                            </div>
-                            <br />
-                        </>
-                    )}
-                    <div className="text-slate-600 dark:text-slate-300">{currentCard.hint || ''}</div>
-                    <hr className="my-4 border-slate-300 dark:border-slate-600" id="answer" />
-                    <div className="text-2xl font-bold text-slate-800 dark:text-white mb-4">
-                        {currentCard.meaning || ''}
-                    </div>
-                    <br />
-                    {currentCard.usage && (
-                        <>
-                            <div className="mb-4">
-                                <div className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Usage</div>
-                                <div className="text-slate-600 dark:text-slate-400">{currentCard.usage}</div>
-                            </div>
-                            <br />
-                        </>
-                    )}
-                    {currentCard.contrast && (
-                        <>
-                            <div className="mb-4">
-                                <div className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Contrast</div>
-                                <div className="text-slate-500 dark:text-slate-400">{currentCard.contrast}</div>
-                            </div>
-                            <br />
-                        </>
-                    )}
-                    <div className="mb-4">
-                        <div className="text-slate-700 dark:text-slate-200">{currentCard.ex1_ori || ''}</div>
-                        <div className="text-slate-500 dark:text-slate-400">{currentCard.ex1_trans || ''}</div>
-                    </div>
-                    <br />
-                    <div>
-                        <div className="text-slate-700 dark:text-slate-200">{currentCard.ex2_ori || ''}</div>
-                        <div className="text-slate-500 dark:text-slate-400">{currentCard.ex2_trans || ''}</div>
-                    </div>
-                </div>
-            );
-        }
-    };
+            )}
+            {currentCard.hint && <div className="text-slate-500 dark:text-slate-400">{currentCard.hint}</div>}
+        </div>
+    );
 
-    // Render Grammar Card 2 (Reverse: Meaning -> Grammar)
-    const renderGrammarCard2 = () => {
-        if (!isFlipped) {
-            // Front: Meaning, Pattern, Hint
-            return (
-                <div className="p-8">
-                    <div className="text-3xl font-bold text-slate-800 dark:text-white mb-2">
-                        {currentCard.meaning || ''}
-                    </div>
-                    <br />
-                    {currentCard.pattern && (
-                        <>
-                            <div className="text-slate-500 dark:text-slate-400 text-lg mb-2">
-                                {currentCard.pattern}
-                            </div>
-                            <br />
-                        </>
-                    )}
-                    <div className="text-slate-600 dark:text-slate-300">{currentCard.hint || ''}</div>
+    const grammarBack = (heading: string, answer: string) => (
+        <div className="space-y-4">
+            <div className="text-3xl font-bold text-slate-800 dark:text-white">{heading}</div>
+            {currentCard.pattern && (
+                <div className="inline-block font-mono text-base bg-slate-100 dark:bg-slate-700/60 text-slate-600 dark:text-slate-300 px-3 py-1.5 rounded-lg">
+                    {currentCard.pattern}
                 </div>
-            );
-        } else {
-            // Back: Meaning, Pattern, Hint + Grammar, Usage, Contrast, Ex1, Ex2
-            return (
-                <div className="p-8">
-                    <div className="text-3xl font-bold text-slate-800 dark:text-white mb-2">
-                        {currentCard.meaning || ''}
-                    </div>
-                    <br />
-                    {currentCard.pattern && (
-                        <>
-                            <div className="text-slate-500 dark:text-slate-400 text-lg mb-2">
-                                {currentCard.pattern}
-                            </div>
-                            <br />
-                        </>
-                    )}
-                    <div className="text-slate-600 dark:text-slate-300">{currentCard.hint || ''}</div>
-                    <hr className="my-4 border-slate-300 dark:border-slate-600" id="answer" />
-                    <div className="text-2xl font-bold text-slate-800 dark:text-white mb-4">
-                        {currentCard.grammar || ''}
-                    </div>
-                    <br />
-                    {currentCard.usage && (
-                        <>
-                            <div className="mb-4">
-                                <div className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Usage</div>
-                                <div className="text-slate-600 dark:text-slate-400">{currentCard.usage}</div>
-                            </div>
-                            <br />
-                        </>
-                    )}
-                    {currentCard.contrast && (
-                        <>
-                            <div className="mb-4">
-                                <div className="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-1">Contrast</div>
-                                <div className="text-slate-500 dark:text-slate-400">{currentCard.contrast}</div>
-                            </div>
-                            <br />
-                        </>
-                    )}
-                    <div className="mb-4">
-                        <div className="text-slate-700 dark:text-slate-200">{currentCard.ex1_ori || ''}</div>
-                        <div className="text-slate-500 dark:text-slate-400">{currentCard.ex1_trans || ''}</div>
-                    </div>
-                    <br />
-                    <div>
-                        <div className="text-slate-700 dark:text-slate-200">{currentCard.ex2_ori || ''}</div>
-                        <div className="text-slate-500 dark:text-slate-400">{currentCard.ex2_trans || ''}</div>
-                    </div>
-                </div>
-            );
-        }
-    };
+            )}
+            {currentCard.hint && <div className="text-slate-500 dark:text-slate-400">{currentCard.hint}</div>}
+            <hr className="border-slate-200 dark:border-slate-600" />
+            <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{answer}</div>
+            <InfoBlock label="Usage"    content={currentCard.usage}    color="amber"  />
+            <InfoBlock label="Contrast" content={currentCard.contrast} color="purple" />
+            {exampleSection(currentCard.ex1_ori, currentCard.ex1_trans, currentCard.ex2_ori, currentCard.ex2_trans)}
+        </div>
+    );
 
-    // Render Cloze Card
+    const renderGrammarCard1 = () =>
+        isFlipped
+            ? grammarBack(currentCard.grammar || '', currentCard.meaning || '')
+            : grammarFront(currentCard.grammar || '');
+
     const renderClozeCard = () => {
-        // Build cloze text from examples
-        let clozeText = '';
-        if (currentCard.ex1_ori && currentCard.ex1_ori.includes('{{c1::')) {
-            // Already has cloze format
-            clozeText = `${currentCard.ex1_ori}\n${currentCard.ex1_trans}`;
-            if (currentCard.ex2_ori) {
-                clozeText += `\n\n${currentCard.ex2_ori}\n${currentCard.ex2_trans}`;
-            }
-        } else {
-            // Build from examples
-            clozeText = `${currentCard.ex1_ori}\n${currentCard.ex1_trans}`;
-            if (currentCard.ex2_ori) {
-                clozeText += `\n\n${currentCard.ex2_ori}\n${currentCard.ex2_trans}`;
-            }
-        }
-        
-        // Replace cloze syntax with visible format for preview (front)
-        const displayText = clozeText
-            .replace(/\{\{c1::([^}]+)\}\}/g, '<span class="bg-yellow-200 dark:bg-yellow-900 px-2 py-1 rounded font-bold">[...]</span>')
+        const raw = `${currentCard.ex1_ori || ''}\n${currentCard.ex1_trans || ''}${currentCard.ex2_ori ? `\n\n${currentCard.ex2_ori}\n${currentCard.ex2_trans || ''}` : ''}`;
+        const displayText = raw
+            .replace(/\{\{c1::([^}]+)\}\}/g, '<span class="bg-yellow-200 dark:bg-yellow-800/60 px-1.5 py-0.5 rounded font-bold text-yellow-800 dark:text-yellow-200">[...]</span>')
             .replace(/\n/g, '<br />');
-        
-        // Revealed text (back)
-        const revealedText = clozeText
-            .replace(/\{\{c1::([^}]+)\}\}/g, '<span class="bg-green-100 dark:bg-green-900 px-2 py-1 rounded font-bold">$1</span>')
+        const revealedText = raw
+            .replace(/\{\{c1::([^}]+)\}\}/g, '<span class="bg-green-100 dark:bg-green-900/50 px-1.5 py-0.5 rounded font-bold text-green-700 dark:text-green-300">$1</span>')
             .replace(/\n/g, '<br />');
 
         if (!isFlipped) {
-            // Front: Cloze text with blank
             return (
-                <div className="p-8">
-                    <div className="text-gray-500 dark:text-gray-400 font-normal mb-2">{currentCard.pos || ''}</div>
-                    <div 
-                        className="text-lg leading-relaxed text-slate-800 dark:text-slate-200 whitespace-pre-line"
-                        dangerouslySetInnerHTML={{ __html: displayText }}
-                    />
-                </div>
-            );
-        } else {
-            // Back: Cloze text + Meaning
-            return (
-                <div className="p-8">
-                    <div className="text-gray-500 dark:text-gray-400 font-normal mb-2">{currentCard.pos || ''}</div>
-                    <div className="text-lg font-bold text-slate-800 dark:text-white mb-4">
-                        {currentCard.meaning}
-                    </div>
-                    <hr className="my-4 border-slate-300 dark:border-slate-600" id="answer" />
-                    <div 
-                        className="text-lg leading-relaxed text-slate-800 dark:text-slate-200 whitespace-pre-line"
-                        dangerouslySetInnerHTML={{ __html: revealedText }}
-                    />
+                <div className="space-y-3">
+                    {currentCard.pos && <PosBadge pos={currentCard.pos} />}
+                    <div className="text-lg leading-relaxed text-slate-800 dark:text-slate-200"
+                         dangerouslySetInnerHTML={{ __html: displayText }} />
                 </div>
             );
         }
+        return (
+            <div className="space-y-4">
+                {currentCard.pos && <PosBadge pos={currentCard.pos} />}
+                <div className="text-2xl font-bold text-blue-600 dark:text-blue-400">{currentCard.meaning}</div>
+                <hr className="border-slate-200 dark:border-slate-600" />
+                <div className="text-lg leading-relaxed text-slate-800 dark:text-slate-200"
+                     dangerouslySetInnerHTML={{ __html: revealedText }} />
+            </div>
+        );
     };
 
     return (
         <div className="flex flex-col items-center h-full w-full max-w-2xl mx-auto py-4">
+            {/* Header */}
             <div className="w-full flex justify-between items-center mb-4 text-slate-500 text-sm">
                 <span>Card {currentIndex + 1} of {cards.length}</span>
-                <div className="flex gap-2">
+                <div className="flex gap-2 items-center">
                     {noteType === 'basic' && !isGrammarCard && (
-                        <div className="flex gap-1 bg-slate-100 dark:bg-slate-800 rounded p-1">
-                            <button
-                                onClick={() => { setCardType('card1'); setIsFlipped(false); }}
-                                className={`px-2 py-1 rounded text-xs ${cardType === 'card1' ? 'bg-white dark:bg-slate-700' : ''}`}
-                            >
-                                Card 1
-                            </button>
-                            <button
-                                onClick={() => { setCardType('card2'); setIsFlipped(false); }}
-                                className={`px-2 py-1 rounded text-xs ${cardType === 'card2' ? 'bg-white dark:bg-slate-700' : ''}`}
-                            >
-                                Card 2 (Reverse)
-                            </button>
+                        <div className="flex gap-1 bg-slate-100 dark:bg-slate-800 rounded-lg p-1">
+                            {(['card1', 'card2'] as const).map((t) => (
+                                <button
+                                    key={t}
+                                    onClick={() => { setCardType(t); setIsFlipped(false); }}
+                                    className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
+                                        cardType === t ? 'bg-white dark:bg-slate-700 text-slate-800 dark:text-white shadow-sm' : 'text-slate-500 hover:text-slate-700 dark:hover:text-slate-300'
+                                    }`}
+                                >
+                                    {t === 'card1' ? 'Card 1' : 'Card 2'}
+                                </button>
+                            ))}
                         </div>
                     )}
-                    {noteType === 'basic' && isGrammarCard && (
-                        <div className="flex gap-1 bg-slate-100 dark:bg-slate-800 rounded p-1">
-                            <button
-                                onClick={() => { setCardType('card1'); setIsFlipped(false); }}
-                                className={`px-2 py-1 rounded text-xs ${cardType === 'card1' ? 'bg-white dark:bg-slate-700' : ''}`}
-                            >
-                                Card 1
-                            </button>
-                            <button
-                                onClick={() => { setCardType('card2'); setIsFlipped(false); }}
-                                className={`px-2 py-1 rounded text-xs ${cardType === 'card2' ? 'bg-white dark:bg-slate-700' : ''}`}
-                            >
-                                Card 2 (Reverse)
-                            </button>
-                        </div>
-                    )}
-                    <span className="font-mono bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded">
-                        {isGrammarCard ? 'Grammar' : (noteType === 'basic' ? 'Basic' : 'Cloze')}
+                    <span className="font-mono bg-slate-100 dark:bg-slate-800 px-2 py-0.5 rounded text-xs">
+                        {isGrammarCard ? 'Grammar' : noteType === 'basic' ? 'Basic' : 'Cloze'}
                     </span>
                 </div>
             </div>
 
-            {/* Card Body */}
-            <div 
-                className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl shadow-xl min-h-[400px] flex flex-col cursor-pointer transition-all hover:border-blue-300 dark:hover:border-blue-700 relative overflow-hidden"
+            {/* Card */}
+            <div
+                className={`w-full bg-white dark:bg-slate-800 border rounded-2xl shadow-xl min-h-[400px] flex flex-col cursor-pointer transition-all ${
+                    isFlipped
+                        ? 'border-blue-300 dark:border-blue-700 shadow-blue-100/50 dark:shadow-none'
+                        : 'border-slate-200 dark:border-slate-700 hover:border-blue-200 dark:hover:border-blue-800'
+                }`}
                 onClick={toggleFlip}
             >
-                <div className="flex-1 flex flex-col p-8" style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", sans-serif', fontSize: '22px' }}>
-                    {isGrammarCard ? (
-                        noteType === 'basic' ? (
-                            cardType === 'card1' ? renderGrammarCard1() : renderGrammarCard2()
-                        ) : (
-                            renderGrammarCard1()
-                        )
-                    ) : (
-                        noteType === 'basic' ? (
-                            cardType === 'card1' ? renderBasicCard1() : renderBasicCard2()
-                        ) : (
-                            renderClozeCard()
-                        )
-                    )}
+                <div
+                    key={`${currentIndex}-${isFlipped}`}
+                    className="flex-1 p-8 card-fade"
+                    style={{ fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", sans-serif', fontSize: '20px' }}
+                >
+                    {isGrammarCard
+                        ? renderGrammarCard1()
+                        : (noteType === 'basic'
+                            ? (cardType === 'card1' ? renderBasicCard1() : renderBasicCard2())
+                            : renderClozeCard())
+                    }
+                </div>
+
+                {/* bottom hint */}
+                <div className="px-8 pb-4 text-xs text-slate-300 dark:text-slate-600 select-none text-right">
+                    {isFlipped ? 'back' : 'click to reveal'}
                 </div>
             </div>
 
             {/* Controls */}
             <div className="flex gap-4 mt-6">
-                <button onClick={prevCard} className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">
+                <button onClick={prevCard} className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 transition-colors">
                     <ChevronDown className="rotate-90" />
                 </button>
-                <button 
+                <button
                     onClick={toggleFlip}
-                    className="px-6 py-2 bg-slate-200 dark:bg-slate-800 rounded-full font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-300 dark:hover:bg-slate-700 transition-colors"
+                    className="px-6 py-2 bg-slate-100 dark:bg-slate-800 rounded-full font-medium text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors text-sm"
                 >
                     {isFlipped ? 'Show Front' : 'Show Back'}
                 </button>
-                <button onClick={nextCard} className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400">
+                <button onClick={nextCard} className="p-2 rounded-full hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-400 transition-colors">
                     <ChevronDown className="-rotate-90" />
                 </button>
             </div>
         </div>
     );
 };
-

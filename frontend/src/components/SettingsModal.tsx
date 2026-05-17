@@ -51,7 +51,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, s
             </div>
             <div className="grid grid-cols-2 gap-6">
               <div>
-                <div className="text-base text-slate-700 dark:text-slate-300 mb-2.5">學習語言</div>
+                <div className="text-base text-slate-700 dark:text-slate-300 mb-2.5">Learning Language</div>
                 <select
                   value={settings.learningLanguage}
                   onChange={(e) => setSettings({...settings, learningLanguage: e.target.value})}
@@ -67,7 +67,7 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, s
                 </select>
               </div>
               <div>
-                <div className="text-base text-slate-700 dark:text-slate-300 mb-2.5">母語</div>
+                <div className="text-base text-slate-700 dark:text-slate-300 mb-2.5">Native Language</div>
                 <select
                   value={settings.nativeLanguage}
                   onChange={(e) => setSettings({...settings, nativeLanguage: e.target.value})}

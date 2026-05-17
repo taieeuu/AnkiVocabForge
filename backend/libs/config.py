@@ -60,8 +60,8 @@ def _get(key: str, default: str) -> str:
 # =========================
 
 # 語言設定
-SOURCE_LANG: str = _get("SOURCE_LANG", "English")
-TARGET_LANG: str = _get("TARGET_LANG", "Chinese")
+LEARNING_LANG: str = _get("SOURCE_LANG", "English")
+NATIVE_LANG: str = _get("TARGET_LANG", "Chinese")
 
 # Deck 設定
 DEFAULT_DECK_NAME: str = _get("DEFAULT_DECK_NAME", "TestDeck")
@@ -386,18 +386,18 @@ GOAL_PROMPT = """
 PROMPT_EN_PASSAGE_VOCAB_QUESTIONS = """
 {goal_prompt_section}
 
-請根據以下設定，為我在這篇 {source_language} 文章中不熟悉的單字逐一產生對應資訊。  
+請根據以下設定，為我在這篇 {learning_language} 文章中不熟悉的單字逐一產生對應資訊。  
 輸出格式請嚴格遵照下列欄位結構：
 
 - word: 單字
-- pos: 單字的詞性 (請使用 {source_language} 常見且標準的詞性名稱，並使用 {target_language} 回答)
-- meaning: {target_language} 意思
-- synonyms: 單字的同義詞（若有的話給 3-5 個並附上 {target_language} 意思，全部以字串形式呈現）
-- ex1_ori: 第一句 {source_language} 例句（使用該單字，且不要創造超出文章內容的額外背景）
-- ex1_trans: 第一句例句的 {target_language} 翻譯
-- ex2_ori: 第二句 {source_language} 例句（使用該單字，且不要創造超出文章內容的額外背景）
-- ex2_trans: 第二句例句的 {target_language} 翻譯
-- hint: 對這個單字的說明，解釋時不要包含單字本身（使用 {source_language} 回答）
+- pos: 單字的詞性 (請使用 {learning_language} 常見且標準的詞性名稱，並使用 {native_language} 回答)
+- meaning: {native_language} 意思
+- synonyms: 單字的同義詞（若有的話給 3-5 個並附上 {native_language} 意思，全部以字串形式呈現）
+- ex1_ori: 第一句 {learning_language} 例句（使用該單字，且不要創造超出文章內容的額外背景）
+- ex1_trans: 第一句例句的 {native_language} 翻譯
+- ex2_ori: 第二句 {learning_language} 例句（使用該單字，且不要創造超出文章內容的額外背景）
+- ex2_trans: 第二句例句的 {native_language} 翻譯
+- hint: 對這個單字的說明，解釋時不要包含單字本身（使用 {learning_language} 回答）
 
 ⚠️ 注意事項：
 1. 僅針對我提供的單字生成內容，不要新增額外單字。
@@ -422,14 +422,14 @@ PROMPT_EN_VOCAB = """
 以下是我不會的單字清單，請依序針對這些單字產生以下欄位：
 
 - word: 單字
-- pos: 單字的詞性 (請使用 {source_language} 常見且標準的詞性名稱，並使用 {target_language} 回答)
-- meaning: 單字在 {target_language} 的意義
-- synonyms: 單字的同義詞（若有的話給 3-5 個，並附上 {target_language} 意思，全部以字串形式呈現）
-- ex1_ori: 第一句 {source_language} 例句（使用該單字，且盡量貼近目標相關內容）
-- ex1_trans: 第一句例句的 {target_language} 翻譯
-- ex2_ori: 第二句 {source_language} 例句（使用該單字，且盡量貼近目標相關內容）
-- ex2_trans: 第二句例句的 {target_language} 翻譯
-- hint: 對這個單字的說明，解釋時不要包含單字本身（請使用 {source_language} 回答）
+- pos: 單字的詞性 (請使用 {learning_language} 常見且標準的詞性名稱，並使用 {native_language} 回答)
+- meaning: 單字在 {native_language} 的意義
+- synonyms: 單字的同義詞（若有的話給 3-5 個，並附上 {native_language} 意思，全部以字串形式呈現）
+- ex1_ori: 第一句 {learning_language} 例句（使用該單字，且盡量貼近目標相關內容）
+- ex1_trans: 第一句例句的 {native_language} 翻譯
+- ex2_ori: 第二句 {learning_language} 例句（使用該單字，且盡量貼近目標相關內容）
+- ex2_trans: 第二句例句的 {native_language} 翻譯
+- hint: 對這個單字的說明，解釋時不要包含單字本身（請使用 {learning_language} 回答）
 
 ⚠️ 注意事項：
 1. 僅針對我提供的單字生成內容，不要新增額外單字。
@@ -450,17 +450,17 @@ PROMPT_EN_VOCAB = """
 PROMPT_AI_GENERATE = """
 {goal_prompt_section}
 
-請根據學習目標生成 {count} 個適合的 {source_language} 單字，並為每個單字產生以下欄位：
+請根據學習目標生成 {count} 個適合的 {learning_language} 單字，並為每個單字產生以下欄位：
 
 - word: 單字
-- pos: 單字的詞性 (請使用 {source_language} 常見且標準的詞性名稱，並使用 {target_language} 回答)
-- meaning: 單字在 {target_language} 的意義
-- synonyms: 單字的同義詞（若有的話給 3-5 個，並附上它們在 {target_language} 的意思；全部以字串形式呈現）
-- ex1_ori: 第一句 {source_language} 例句（使用該單字，難度與學習目標一致，不得添加無關背景）
-- ex1_trans: 第一句例句在 {target_language} 的翻譯
-- ex2_ori: 第二句 {source_language} 例句（使用該單字，難度與學習目標一致，不得添加無關背景）
-- ex2_trans: 第二句例句在 {target_language} 的翻譯
-- hint: 對這個單字的說明，解釋時不要包含單字本身（使用 {source_language} 回答）
+- pos: 單字的詞性 (請使用 {learning_language} 常見且標準的詞性名稱，並使用 {native_language} 回答)
+- meaning: 單字在 {native_language} 的意義
+- synonyms: 單字的同義詞（若有的話給 3-5 個，並附上它們在 {native_language} 的意思；全部以字串形式呈現）
+- ex1_ori: 第一句 {learning_language} 例句（使用該單字，難度與學習目標一致，不得添加無關背景）
+- ex1_trans: 第一句例句在 {native_language} 的翻譯
+- ex2_ori: 第二句 {learning_language} 例句（使用該單字，難度與學習目標一致，不得添加無關背景）
+- ex2_trans: 第二句例句在 {native_language} 的翻譯
+- hint: 對這個單字的說明，解釋時不要包含單字本身（使用 {learning_language} 回答）
 
 ⚠️ 注意事項：
 1. 生成的單字必須完全符合學習目標的主題與難度。
@@ -485,13 +485,13 @@ GRAMMAR_PROMPT = """
 每一個文法項目必須包含以下欄位：
 
 - grammar：該文法的標準句型結構公式；請勿省略文法句型的變化。
-- usage：此文法的實際使用時機與適用條件，需具體描述何時選用此結構，避免抽象或模糊表述（使用 {source_language}）。
-- meaning：此文法的意思（使用 {target_language}）。
+- usage：此文法的實際使用時機與適用條件，需具體描述何時選用此結構，避免抽象或模糊表述（使用 {learning_language}）。
+- meaning：此文法的意思（使用 {native_language}）。
 - contrast：contrast 必須明確指出「相似文法」與「本結構」的選擇判斷依據，並說明在何種語境或條件下只能使用其中一者，而非僅描述表面差異。
-- ex1_ori：第一句 {source_language} 例句，必須正確且自然地使用該文法，語句簡潔，難度符合學習目標。
-- ex1_trans：第一句例句的 {target_language} 專業且自然的翻譯。
-- ex2_ori：第二句 {source_language} 例句，必須使用相同文法，但呈現不同且合理的使用情境。
-- ex2_trans：第二句例句的 {target_language} 專業且自然的翻譯。
+- ex1_ori：第一句 {learning_language} 例句，必須正確且自然地使用該文法，語句簡潔，難度符合學習目標。
+- ex1_trans：第一句例句的 {native_language} 專業且自然的翻譯。
+- ex2_ori：第二句 {learning_language} 例句，必須使用相同文法，但呈現不同且合理的使用情境。
+- ex2_trans：第二句例句的 {native_language} 專業且自然的翻譯。
 
 嚴格規則（請務必遵守）：
 1. 所有生成的文法項目必須完全符合學習目標所定義的主題、語域與難度。

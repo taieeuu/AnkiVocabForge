@@ -2,15 +2,15 @@ from pydantic import BaseModel, Field
 
 
 class VocabCard(BaseModel):
-    word:      str = Field(description="The vocabulary word")
-    pos:       str = Field(description="Part of speech in target language (e.g. n., v., adj.)")
-    meaning:   str = Field(description="Meaning of the word in target language")
-    synonyms:  str = Field(description="3-5 synonyms with target language translations, as a single string")
-    ex1_ori:   str = Field(description="First example sentence in source language")
-    ex1_trans: str = Field(description="Translation of first example sentence")
-    ex2_ori:   str = Field(description="Second example sentence in source language")
-    ex2_trans: str = Field(description="Translation of second example sentence")
-    hint:      str = Field(description="Explanation without using the word itself, in source language")
+    word:      str = Field(description="目標單字")
+    pos:       str = Field(description="母語的詞性（例如：n., v., adj., adv., prep., conj.）")
+    meaning:   str = Field(description="單字在母語中的意思")
+    synonyms:  str = Field(description="3-5 個同義詞及其母語翻譯，以單一字串呈現")
+    ex1_ori:   str = Field(description="第一個例句（學習語言）")
+    ex1_trans: str = Field(description="第一個例句的翻譯")
+    ex2_ori:   str = Field(description="第二個例句（學習語言）")
+    ex2_trans: str = Field(description="第二個例句的翻譯")
+    hint:      str = Field(description="不使用該單字本身的說明，以學習語言撰寫")
 
 
 class VocabResponse(BaseModel):
@@ -18,14 +18,14 @@ class VocabResponse(BaseModel):
 
 
 class GrammarCard(BaseModel):
-    grammar:   str = Field(description="Grammar pattern or rule title")
-    usage:     str = Field(description="When and conditions to use this grammar, in source language")
-    meaning:   str = Field(description="Meaning or explanation in target language")
-    contrast:  str = Field(description="Comparison with similar grammar, explaining when to choose each")
-    ex1_ori:   str = Field(description="First example sentence in source language")
-    ex1_trans: str = Field(description="Translation of first example sentence")
-    ex2_ori:   str = Field(description="Second example sentence in source language")
-    ex2_trans: str = Field(description="Translation of second example sentence")
+    grammar:   str = Field(description="文法規則或句型的標題")
+    usage:     str = Field(description="此文法的使用時機與條件，以學習語言撰寫")
+    meaning:   str = Field(description="母語的意思或說明")
+    contrast:  str = Field(description="與相似文法的比較，說明各自的使用時機")
+    ex1_ori:   str = Field(description="第一個例句（學習語言）")
+    ex1_trans: str = Field(description="第一個例句的翻譯")
+    ex2_ori:   str = Field(description="第二個例句（學習語言）")
+    ex2_trans: str = Field(description="第二個例句的翻譯")
 
 
 class GrammarResponse(BaseModel):

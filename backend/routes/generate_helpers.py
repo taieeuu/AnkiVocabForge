@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Dict, Any, Optional, List
 import logging
 
-from libs.config import OUTPUTS_DIR, PASSAGE_IMAGE_DIR, SOURCE_LANG, TARGET_LANG, AI_MODEL
+from libs.config import OUTPUTS_DIR, PASSAGE_IMAGE_DIR, LEARNING_LANG, NATIVE_LANG, AI_MODEL
 from helpers.session import get_or_create_session_dir, setup_session_directories
 from helpers.api_key import format_api_key_error
 from helpers.file_utils import secure_filename
@@ -190,22 +190,21 @@ def get_language_settings(settings: Dict[str, Any]) -> tuple:
                 return str(value).strip()
         return default
 
-    source_lang = _get_setting_value(
+    learning_lang = _get_setting_value(
         settings,
-        'sourceLang',
-        'sourceLanguage',
-        'source_language',
-        default=SOURCE_LANG
+        'learningLang',
+        'learningLanguage',
+        'learning_language',
+        default=LEARNING_LANG
     )
-    target_lang = _get_setting_value(
+    native_lang = _get_setting_value(
         settings,
-        'language',
-        'targetLang',
-        'targetLanguage',
-        'target_language',
-        default=TARGET_LANG
+        'nativeLang',
+        'nativeLanguage',
+        'native_language',
+        default=NATIVE_LANG
     )
-    return source_lang, target_lang
+    return learning_lang, native_lang
 
 
 def load_generated_cards(orig_dir: Path) -> List[Dict]:

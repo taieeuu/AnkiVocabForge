@@ -3,7 +3,7 @@
 """
 from fastapi import APIRouter, HTTPException
 from typing import Dict, Any
-from libs.config import OPENAI_API_KEY, AI_MODEL, TARGET_LANG, SOURCE_LANG
+from libs.config import OPENAI_API_KEY, AI_MODEL, NATIVE_LANG, LEARNING_LANG
 import logging
 
 router = APIRouter()
@@ -16,8 +16,8 @@ async def get_settings():
     return {
         'apiKey': OPENAI_API_KEY[:10] + '***' if OPENAI_API_KEY else '',
         'model': AI_MODEL,
-        'language': TARGET_LANG,
-        'sourceLang': SOURCE_LANG
+        'nativeLang': NATIVE_LANG,
+        'learningLang': LEARNING_LANG
     }
 
 

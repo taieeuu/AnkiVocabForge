@@ -13,8 +13,8 @@ class ValidatedSettings(BaseModel):
     """驗證後的設置"""
     api_key: str
     model: str
-    source_lang: str
-    target_lang: str
+    learning_lang: str
+    native_lang: str
 
 
 def get_validated_settings(settings: dict) -> ValidatedSettings:
@@ -49,27 +49,26 @@ def get_validated_settings(settings: dict) -> ValidatedSettings:
         return default
 
     model = settings.get('model') or AI_MODEL
-    source_lang = _get_setting_value(
+    learning_lang = _get_setting_value(
         settings,
-        'sourceLang',
-        'sourceLanguage',
-        'source_language',
+        'learningLang',
+        'learningLanguage',
+        'learning_language',
         default='English'
     )
-    target_lang = _get_setting_value(
+    native_lang = _get_setting_value(
         settings,
-        'language',
-        'targetLang',
-        'targetLanguage',
-        'target_language',
+        'nativeLang',
+        'nativeLanguage',
+        'native_language',
         default='Chinese'
     )
-    
+
     return ValidatedSettings(
         api_key=api_key,
         model=model,
-        source_lang=source_lang,
-        target_lang=target_lang
+        learning_lang=learning_lang,
+        native_lang=native_lang
     )
 
 

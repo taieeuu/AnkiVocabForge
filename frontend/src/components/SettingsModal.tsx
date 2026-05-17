@@ -51,10 +51,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, s
             </div>
             <div className="grid grid-cols-2 gap-6">
               <div>
-                <div className="text-base text-slate-700 dark:text-slate-300 mb-2.5">Source Language</div>
-                <select 
-                  value={settings.sourceLanguage}
-                  onChange={(e) => setSettings({...settings, sourceLanguage: e.target.value})}
+                <div className="text-base text-slate-700 dark:text-slate-300 mb-2.5">學習語言</div>
+                <select
+                  value={settings.learningLanguage}
+                  onChange={(e) => setSettings({...settings, learningLanguage: e.target.value})}
                   className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-slate-800 dark:text-slate-200 focus:border-blue-500 outline-none text-base"
                 >
                   <option value="English">English</option>
@@ -67,10 +67,10 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onClose, s
                 </select>
               </div>
               <div>
-                <div className="text-base text-slate-700 dark:text-slate-300 mb-2.5">Target Language</div>
-                <select 
-                  value={settings.language}
-                  onChange={(e) => setSettings({...settings, language: e.target.value})}
+                <div className="text-base text-slate-700 dark:text-slate-300 mb-2.5">母語</div>
+                <select
+                  value={settings.nativeLanguage}
+                  onChange={(e) => setSettings({...settings, nativeLanguage: e.target.value})}
                   className="w-full bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-white/10 rounded-xl px-4 py-3 text-slate-800 dark:text-slate-200 focus:border-blue-500 outline-none text-base"
                 >
                   <option value="Chinese">繁體中文</option>

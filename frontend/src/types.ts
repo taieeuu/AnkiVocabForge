@@ -13,8 +13,8 @@ export interface Log {
 export interface Settings {
   apiKey: string;
   model: string;
-  language: string; // target language
-  sourceLanguage: string; // source language
+  nativeLanguage: string;
+  learningLanguage: string;
   audio: {
     enabled: boolean;
     voice: string;

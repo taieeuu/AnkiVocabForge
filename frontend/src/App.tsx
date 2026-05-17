@@ -71,8 +71,8 @@ export default function App() {
   const [settings, setSettings] = useState<SettingsType>({
     apiKey: '',
     model: 'gpt-4o-mini',
-    language: 'Chinese',
-    sourceLanguage: 'English',
+    nativeLanguage: 'Chinese',
+    learningLanguage: 'English',
     audio: { enabled: false, voice: 'alloy' }
   });
 
@@ -220,7 +220,7 @@ export default function App() {
                 formData.append('settings', JSON.stringify({
                     apiKey: settings.apiKey && !settings.apiKey.includes('***') ? settings.apiKey : '',
                     model: settings.model,
-                    language: settings.language
+                    nativeLang: settings.nativeLanguage
                 }));
                 // 如果是第一個文件且還沒有 sessionId，不傳遞；否則傳遞現有的 sessionId
                 if (currentSessionId) {
@@ -316,8 +316,8 @@ export default function App() {
         settings: {
           apiKey: settings.apiKey && !settings.apiKey.includes('***') ? settings.apiKey : '',
           model: settings.model,
-          language: settings.language,
-          sourceLang: settings.sourceLanguage,
+          nativeLang: settings.nativeLanguage,
+          learningLang: settings.learningLanguage,
           audio: settings.audio
         }
       };

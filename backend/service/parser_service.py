@@ -10,16 +10,16 @@ logger = get_logger()
 
 class ParserService:
     @staticmethod
-    def parse_passage(pdf_path: str, vocab_path: str, target: str, source_lang: str = 'English', target_lang: str = 'Chinese', selected_images: list[str] = None, deck_name: str | None = None, session_dir: str = None, api_key: str = None, model: str = None):
+    def parse_passage(pdf_path: str, vocab_path: str, target: str, learning_lang: str = 'English', native_lang: str = 'Chinese', selected_images: list[str] = None, deck_name: str | None = None, session_dir: str = None, api_key: str = None, model: str = None):
         """
         解析文章模式
-        
+
         Args:
             pdf_path: PDF 檔案路徑（如果 selected_images 已提供，可以為空字串，不需要解析 PDF）
             vocab_path: 單字列表檔案路徑
             target: 目標
-            source_lang: 來源語言
-            target_lang: 目標語言
+            learning_lang: 學習語言
+            native_lang: 母語
             selected_images: 選擇的圖片路徑列表（如果為 None，則需要 pdf_path 並解析 PDF 使用所有圖片）
         """
         logger.log(LogLevel.INFO, f"🚀 Start To Parsing Passage Mode ... ")
@@ -52,8 +52,8 @@ class ParserService:
 
         prompt = PROMPT_EN_PASSAGE_VOCAB_QUESTIONS.format(
             goal_prompt_section=goal_prompt_section,
-            source_language=source_lang,
-            target_language=target_lang,
+            learning_language=learning_lang,
+            native_language=native_lang,
             vocab_list="\n".join(parse_vocab_list)  # 使用所有單字，不過濾
         )
         logger.log(LogLevel.DEBUG, f"selected_images: {selected_images}")
@@ -77,8 +77,8 @@ class ParserService:
         gpt.to_json(
             transed_vocab_list,
             mode="passage",
-            source_lang=source_lang,
-            target_lang=target_lang,
+            source_lang=learning_lang,
+            target_lang=native_lang,
             filename_hint=stem,
         )
         logger.log(LogLevel.INFO, "✅ JSON 檔案儲存完成")
@@ -86,7 +86,7 @@ class ParserService:
         return transed_vocab_list
 
     @staticmethod
-    def parse_vocab_txt(vocab_path: str, target: str, source_lang: str = 'English', target_lang: str = 'Chinese', deck_name: str | None = None, session_dir: str = None, api_key: str = None, model: str = None):
+    def parse_vocab_txt(vocab_path: str, target: str, learning_lang: str = 'English', native_lang: str = 'Chinese', deck_name: str | None = None, session_dir: str = None, api_key: str = None, model: str = None):
         logger.log(LogLevel.INFO, "解析單字列表...")
         parser = Parser(api_key=api_key, session_dir=session_dir)
         vocab_list = parser.parse_vocab_txt(vocab_path)
@@ -102,8 +102,8 @@ class ParserService:
 
         prompt = PROMPT_EN_VOCAB.format(
             goal_prompt_section=goal_prompt_section,
-            source_language=source_lang,
-            target_language=target_lang,
+            learning_language=learning_lang,
+            native_language=native_lang,
             vocab_list="\n".join(vocab_list)  # 使用所有單字，不過濾
         )
         
@@ -125,8 +125,8 @@ class ParserService:
             transed_vocab_list,
             mode="vocab",
             deck_name=deck_name,
-            source_lang=source_lang,
-            target_lang=target_lang,
+            source_lang=learning_lang,
+            target_lang=native_lang,
             filename_hint=stem,
         )
         logger.log(LogLevel.INFO, "✅ JSON 檔案儲存完成")
@@ -145,28 +145,28 @@ class ParserService:
         return parser.parse_excel(excel_path)
     
     @staticmethod
-    def generate_vocab_ai(target: str, count: int, source_lang: str = 'English', target_lang: str = 'Chinese', session_dir: str = None, api_key: str = None, model: str = None):
+    def generate_vocab_ai(target: str, count: int, learning_lang: str = 'English', native_lang: str = 'Chinese', session_dir: str = None, api_key: str = None, model: str = None):
         """
         使用 AI 生成單字列表
-        
+
         Args:
             target: 學習目標
             count: 要生成的單字數量
-            source_lang: 來源語言
-            target_lang: 目標語言
-            
+            learning_lang: 學習語言
+            native_lang: 母語
+
         Returns:
             List[Dict]: 生成的單字列表
         """
         logger.log(LogLevel.INFO, f"開始使用 AI 生成單字列表（目標：{target}，數量：{count}）...")
-        
+
         # 格式化 prompt（與其他方法保持一致）
         goal_prompt_section = GOAL_PROMPT.format(target=target)
         prompt = PROMPT_AI_GENERATE.format(
             goal_prompt_section=goal_prompt_section,
             count=count,
-            source_language=source_lang,
-            target_language=target_lang
+            learning_language=learning_lang,
+            native_language=native_lang
         )
         
         logger.log(LogLevel.DEBUG, f"prompt: {prompt}")
@@ -182,8 +182,8 @@ class ParserService:
         gpt.to_json(
             vocab_list,
             mode="ai_generate",
-            source_lang=source_lang,
-            target_lang=target_lang,
+            source_lang=learning_lang,
+            target_lang=native_lang,
             filename_hint=f"ai-generate-{target}-{count}w",
         )
         logger.log(LogLevel.INFO, "✅ JSON 檔案儲存完成")
@@ -191,28 +191,28 @@ class ParserService:
         return vocab_list
     
     @staticmethod
-    def generate_grammar_ai(target: str, count: int, source_lang: str = 'English', target_lang: str = 'Chinese', session_dir: str = None, api_key: str = None, model: str = None):
+    def generate_grammar_ai(target: str, count: int, learning_lang: str = 'English', native_lang: str = 'Chinese', session_dir: str = None, api_key: str = None, model: str = None):
         """
         使用 AI 生成文法列表
-        
+
         Args:
             target: 學習目標
             count: 要生成的文法數量
-            source_lang: 來源語言
-            target_lang: 目標語言
-            
+            learning_lang: 學習語言
+            native_lang: 母語
+
         Returns:
             List[Dict]: 生成的文法列表
         """
         logger.log(LogLevel.INFO, f"開始使用 AI 生成文法列表（目標：{target}，數量：{count}）...")
-        
+
         # 格式化 prompt（與其他方法保持一致）
         goal_prompt_section = GOAL_PROMPT.format(target=target)
         prompt = GRAMMAR_PROMPT.format(
             goal_prompt_section=goal_prompt_section,
             count=count,
-            source_language=source_lang,
-            target_language=target_lang
+            learning_language=learning_lang,
+            native_language=native_lang
         )
         
         logger.log(LogLevel.DEBUG, f"prompt: {prompt}")
@@ -227,8 +227,8 @@ class ParserService:
         gpt.to_json(
             grammar_list,
             mode="grammar",
-            source_lang=source_lang,
-            target_lang=target_lang,
+            source_lang=learning_lang,
+            target_lang=native_lang,
             filename_hint=f"grammar-{target}-{count}g",
         )
         logger.log(LogLevel.INFO, "✅ JSON 檔案儲存完成")
@@ -236,20 +236,20 @@ class ParserService:
         return grammar_list
     
     @staticmethod
-    def parse_grammar_txt(grammar_path: str, target: str, source_lang: str = 'English', target_lang: str = 'Chinese', deck_name: str | None = None, session_dir: str = None, api_key: str = None, model: str = None):
+    def parse_grammar_txt(grammar_path: str, target: str, learning_lang: str = 'English', native_lang: str = 'Chinese', deck_name: str | None = None, session_dir: str = None, api_key: str = None, model: str = None):
         """
         解析文法列表文件並生成文法卡片
-        
+
         Args:
             grammar_path: 文法列表文件路徑
             target: 學習目標
-            source_lang: 來源語言
-            target_lang: 目標語言
+            learning_lang: 學習語言
+            native_lang: 母語
             deck_name: Deck 名稱
             session_dir: 會話目錄
             api_key: API Key
             model: 模型名稱
-            
+
         Returns:
             List[Dict]: 生成的文法列表
         """
@@ -271,8 +271,8 @@ class ParserService:
         prompt_template = GRAMMAR_PROMPT.replace("{count}", str(len(grammar_list)))
         prompt = prompt_template.format(
             goal_prompt_section=goal_prompt_section,
-            source_language=source_lang,
-            target_language=target_lang
+            learning_language=learning_lang,
+            native_language=native_lang
         )
         # 在 prompt 末尾添加文法列表
         prompt += f"\n\n我的文法如下：\n{grammar_list_text}"
@@ -295,8 +295,8 @@ class ParserService:
             transed_grammar_list,
             mode="grammar",
             deck_name=deck_name,
-            source_lang=source_lang,
-            target_lang=target_lang,
+            source_lang=learning_lang,
+            target_lang=native_lang,
             filename_hint=stem,
         )
         logger.log(LogLevel.INFO, "✅ JSON 檔案儲存完成")

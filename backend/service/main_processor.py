@@ -7,17 +7,17 @@ from libs.logger import LogLevel, get_logger
 logger = get_logger()
 
 class MainProcessor:
-    def run_article_mode(self, pdf_path: str, text_path: str, deck_name: str, target: str, source_lang: str = 'English', target_lang: str = 'Chinese', selected_images: list[str] = None, card_type: str = 'Basic', session_dir: str = None, api_key: str = None, model: str = None) -> str:
+    def run_article_mode(self, pdf_path: str, text_path: str, deck_name: str, target: str, learning_lang: str = 'English', native_lang: str = 'Chinese', selected_images: list[str] = None, card_type: str = 'Basic', session_dir: str = None, api_key: str = None, model: str = None) -> str:
         """
         執行文章模式
-        
+
         Args:
             pdf_path: PDF 檔案路徑（如果已解析過，可以為空）
             text_path: 文字檔案路徑
             deck_name: Deck 名稱
             target: 目標
-            source_lang: 來源語言
-            target_lang: 目標語言
+            learning_lang: 學習語言
+            native_lang: 母語
             selected_images: 選擇的圖片路徑列表（如果為 None，則使用所有圖片）
         """
         logger.log(LogLevel.INFO, "開始解析文章與單字...")
@@ -27,8 +27,8 @@ class MainProcessor:
             pdf_path,
             text_path,
             target,
-            source_lang=source_lang,
-            target_lang=target_lang,
+            learning_lang=learning_lang,
+            native_lang=native_lang,
             selected_images=selected_images,
             deck_name=deck_name,
             session_dir=session_dir,
@@ -48,13 +48,13 @@ class MainProcessor:
         logger.log(LogLevel.INFO, "Anki 匯入完成")
         return f"文章模式完成 ✅｜{msg}"
 
-    def run_vocab_mode(self, text_path: str, target: str, deck_name: str, source_lang: str = 'English', target_lang: str = 'Chinese', card_type: str = 'Basic', session_dir: str = None, api_key: str = None, model: str = None) -> str:
+    def run_vocab_mode(self, text_path: str, target: str, deck_name: str, learning_lang: str = 'English', native_lang: str = 'Chinese', card_type: str = 'Basic', session_dir: str = None, api_key: str = None, model: str = None) -> str:
         logger.log(LogLevel.INFO, "開始解析單字列表...")
         vocab_list = ParserService.parse_vocab_txt(
             text_path,
             target,
-            source_lang=source_lang,
-            target_lang=target_lang,
+            learning_lang=learning_lang,
+            native_lang=native_lang,
             deck_name=deck_name,
             session_dir=session_dir,
             api_key=api_key,
@@ -83,31 +83,31 @@ class MainProcessor:
         msg = AnkiService.import_passage(vocab_list)
         return f"Word 模式完成 ✅｜{msg}"
 
-    def run_ai_generate_mode(self, target: str, count: int, deck_name: str, source_lang: str = 'English', target_lang: str = 'Chinese', card_type: str = 'Basic', session_dir: str = None, api_key: str = None, model: str = None) -> str:
+    def run_ai_generate_mode(self, target: str, count: int, deck_name: str, learning_lang: str = 'English', native_lang: str = 'Chinese', card_type: str = 'Basic', session_dir: str = None, api_key: str = None, model: str = None) -> str:
         """
         執行 AI 生成模式
-        
+
         Args:
             target: 學習目標（必填）
             count: 要生成的單字數量
             deck_name: Deck 名稱
-            source_lang: 來源語言
-            target_lang: 目標語言
-            
+            learning_lang: 學習語言
+            native_lang: 母語
+
         Returns:
             str: 執行結果訊息
         """
         if not target or not target.strip():
             raise ValueError("AI 生成模式必須提供學習目標（target）")
-        
+
         try:
             count_int = int(count) if count else 10
         except ValueError:
             count_int = 10
             logger.log(LogLevel.WARNING, f"無法解析數量參數，使用預設值：{count_int}")
-        
+
         logger.log(LogLevel.INFO, "開始使用 AI 生成單字列表...")
-        vocab_list = ParserService.generate_vocab_ai(target, count_int, source_lang=source_lang, target_lang=target_lang, session_dir=session_dir, api_key=api_key, model=model)
+        vocab_list = ParserService.generate_vocab_ai(target, count_int, learning_lang=learning_lang, native_lang=native_lang, session_dir=session_dir, api_key=api_key, model=model)
         logger.log(LogLevel.INFO, f"生成完成，共 {len(vocab_list)} 個單字")
         
         logger.log(LogLevel.INFO, "開始生成語音檔...")
@@ -121,31 +121,31 @@ class MainProcessor:
         logger.log(LogLevel.INFO, "Anki 匯入完成")
         return f"AI 生成模式完成 ✅｜{msg}"
     
-    def run_grammar_mode(self, target: str, count: int, deck_name: str, source_lang: str = 'English', target_lang: str = 'Chinese', session_dir: str = None, api_key: str = None, model: str = None) -> str:
+    def run_grammar_mode(self, target: str, count: int, deck_name: str, learning_lang: str = 'English', native_lang: str = 'Chinese', session_dir: str = None, api_key: str = None, model: str = None) -> str:
         """
         執行文法生成模式
-        
+
         Args:
             target: 學習目標（必填）
             count: 要生成的文法數量
             deck_name: Deck 名稱
-            source_lang: 來源語言
-            target_lang: 目標語言
-            
+            learning_lang: 學習語言
+            native_lang: 母語
+
         Returns:
             str: 執行結果訊息
         """
         if not target or not target.strip():
             raise ValueError("文法生成模式必須提供學習目標（target）")
-        
+
         try:
             count_int = int(count) if count else 10
         except ValueError:
             count_int = 10
             logger.log(LogLevel.WARNING, f"無法解析數量參數，使用預設值：{count_int}")
-        
+
         logger.log(LogLevel.INFO, "開始使用 AI 生成文法列表...")
-        grammar_list = ParserService.generate_grammar_ai(target, count_int, source_lang=source_lang, target_lang=target_lang, session_dir=session_dir, api_key=api_key, model=model)
+        grammar_list = ParserService.generate_grammar_ai(target, count_int, learning_lang=learning_lang, native_lang=native_lang, session_dir=session_dir, api_key=api_key, model=model)
         logger.log(LogLevel.INFO, f"生成完成，共 {len(grammar_list)} 個文法")
         
         logger.log(LogLevel.INFO, "開始匯入 Anki...")
@@ -153,17 +153,17 @@ class MainProcessor:
         logger.log(LogLevel.INFO, "Anki 匯入完成")
         return f"文法生成模式完成 ✅｜{msg}"
     
-    def run_grammar_from_file_mode(self, text_path: str, target: str, deck_name: str, source_lang: str = 'English', target_lang: str = 'Chinese', session_dir: str = None, api_key: str = None, model: str = None) -> str:
+    def run_grammar_from_file_mode(self, text_path: str, target: str, deck_name: str, learning_lang: str = 'English', native_lang: str = 'Chinese', session_dir: str = None, api_key: str = None, model: str = None) -> str:
         """
         執行文法文件模式（從文件讀取文法列表）
-        
+
         Args:
             text_path: 文法列表文件路徑
             target: 學習目標
             deck_name: Deck 名稱
-            source_lang: 來源語言
-            target_lang: 目標語言
-            
+            learning_lang: 學習語言
+            native_lang: 母語
+
         Returns:
             str: 執行結果訊息
         """
@@ -171,8 +171,8 @@ class MainProcessor:
         grammar_list = ParserService.parse_grammar_txt(
             text_path,
             target,
-            source_lang=source_lang,
-            target_lang=target_lang,
+            learning_lang=learning_lang,
+            native_lang=native_lang,
             deck_name=deck_name,
             session_dir=session_dir,
             api_key=api_key,

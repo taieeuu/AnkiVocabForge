@@ -4,7 +4,8 @@ from typing import List, Dict
 import json
 import os
 import glob
-from .config import PROMPT_EN_PASSAGE_VOCAB_QUESTIONS, WORD_SCHEMA, TRANSED_VOCAB_DIR, PROMPT_EN_VOCAB, PROMPT_AI_GENERATE, GRAMMAR_PROMPT, GRAMMAR_SCHEMA
+from .config import PROMPT_EN_PASSAGE_VOCAB_QUESTIONS, TRANSED_VOCAB_DIR, PROMPT_EN_VOCAB, PROMPT_AI_GENERATE, GRAMMAR_PROMPT
+from .schemas import VocabResponse, GrammarResponse
 from datetime import datetime
 from .config import VOICE_DIR, AI_MODEL, OPENAI_API_KEY
 from helpers.file_utils import slugify
@@ -88,22 +89,10 @@ class GPTClient:
 
         logger.log(LogLevel.INFO, "生成中...")
 
-        res = self.client.chat.completions.create(
+        res = self.client.beta.chat.completions.parse(
             model=self.model,
             messages=[{"role": "user", "content": contents}],
-            response_format={
-                "type": "json_schema",
-                "json_schema": {
-                    "name": "vocab_list",
-                    "schema": {
-                        "type": "object",
-                        "additionalProperties": False,
-                        "properties": WORD_SCHEMA,
-                        "required": ["vocab"]
-                    },
-                    "strict": True
-                }
-            }
+            response_format=VocabResponse,
         )
 
         # 記錄 token 使用量
@@ -113,39 +102,25 @@ class GPTClient:
             completion_tokens = getattr(usage, 'completion_tokens', 0)
             total_tokens = getattr(usage, 'total_tokens', 0)
             logger.log(LogLevel.INFO, f"Token 使用量 - 輸入: {prompt_tokens}, 輸出: {completion_tokens}, 總計: {total_tokens}")
-        
-        raw = res.choices[0].message.content
-        try:
-            obj = json.loads(raw)       # 這裡一定是 object（因為 schema）
-            return obj.get("vocab", []) # 只回傳你要的 array
-        except json.JSONDecodeError:
-            logger.log(LogLevel.ERROR, f"GPT 回傳非合法 JSON，原始輸出：\n{raw}")
+
+        parsed = res.choices[0].message.parsed
+        if parsed is None:
+            logger.log(LogLevel.ERROR, "GPT 回傳解析失敗")
             return []
+        return [card.model_dump() for card in parsed.vocab]
 
     def vocab_from_words(self, words: List[str], prompt: str = PROMPT_EN_VOCAB):
         """
-        給定單字清單，請 GPT 依 WORD_SCHEMA 產生完整詞彙資料（pos/meaning/例句）。
+        給定單字清單，請 GPT 產生完整詞彙資料（pos/meaning/例句）。
         """
         words = [w.strip() for w in words if isinstance(w, str) and w.strip()]
         if not words:
             return []
 
-        res = self.client.chat.completions.create(
+        res = self.client.beta.chat.completions.parse(
             model=self.model,
             messages=[{"role": "user", "content": [{"type": "text", "text": prompt}]}],
-            response_format={
-                "type": "json_schema",
-                "json_schema": {
-                    "name": "vocab_list",
-                    "schema": {
-                        "type": "object",
-                        "additionalProperties": False,
-                        "properties": WORD_SCHEMA,
-                        "required": ["vocab"]
-                    },
-                    "strict": True
-                }
-            },
+            response_format=VocabResponse,
         )
         # 記錄 token 使用量
         if hasattr(res, 'usage') and res.usage:
@@ -154,39 +129,25 @@ class GPTClient:
             completion_tokens = getattr(usage, 'completion_tokens', 0)
             total_tokens = getattr(usage, 'total_tokens', 0)
             logger.log(LogLevel.INFO, f"Token 使用量 - 輸入: {prompt_tokens}, 輸出: {completion_tokens}, 總計: {total_tokens}")
-        
-        raw = res.choices[0].message.content
-        try:
-            obj = json.loads(raw)
-            return obj.get("vocab", [])
-        except json.JSONDecodeError:
-            logger.log(LogLevel.WARNING, f"⚠️ GPT 回傳非合法 JSON，原始輸出：\n{raw}")
+
+        parsed = res.choices[0].message.parsed
+        if parsed is None:
+            logger.log(LogLevel.WARNING, "⚠️ GPT 回傳解析失敗")
             return []
+        return [card.model_dump() for card in parsed.vocab]
     
     def grammar_from_list(self, grammar_list: List[str], prompt: str = None):
         """
-        給定文法清單，請 GPT 依 GRAMMAR_SCHEMA 產生完整文法資料。
+        給定文法清單，請 GPT 產生完整文法資料。
         """
         grammar_list = [g.strip() for g in grammar_list if isinstance(g, str) and g.strip()]
         if not grammar_list:
             return []
 
-        res = self.client.chat.completions.create(
+        res = self.client.beta.chat.completions.parse(
             model=self.model,
             messages=[{"role": "user", "content": [{"type": "text", "text": prompt}]}],
-            response_format={
-                "type": "json_schema",
-                "json_schema": {
-                    "name": "grammar_list",
-                    "schema": {
-                        "type": "object",
-                        "additionalProperties": False,
-                        "properties": GRAMMAR_SCHEMA,
-                        "required": ["grammar"]
-                    },
-                    "strict": True
-                }
-            },
+            response_format=GrammarResponse,
         )
         # 記錄 token 使用量
         if hasattr(res, 'usage') and res.usage:
@@ -195,14 +156,12 @@ class GPTClient:
             completion_tokens = getattr(usage, 'completion_tokens', 0)
             total_tokens = getattr(usage, 'total_tokens', 0)
             logger.log(LogLevel.INFO, f"Token 使用量 - 輸入: {prompt_tokens}, 輸出: {completion_tokens}, 總計: {total_tokens}")
-        
-        raw = res.choices[0].message.content
-        try:
-            obj = json.loads(raw)
-            return obj.get("grammar", [])
-        except json.JSONDecodeError:
-            logger.log(LogLevel.WARNING, f"⚠️ GPT 回傳非合法 JSON，原始輸出：\n{raw}")
+
+        parsed = res.choices[0].message.parsed
+        if parsed is None:
+            logger.log(LogLevel.WARNING, "⚠️ GPT 回傳解析失敗")
             return []
+        return [card.model_dump() for card in parsed.grammar]
     
     def gen_voice(self, text: str):
         """
@@ -254,24 +213,12 @@ class GPTClient:
         """
         logger.log(LogLevel.INFO, "正在生成單字...")
         
-        res = self.client.chat.completions.create(
+        res = self.client.beta.chat.completions.parse(
             model=self.model,
             messages=[{"role": "user", "content": [{"type": "text", "text": prompt}]}],
-            response_format={
-                "type": "json_schema",
-                "json_schema": {
-                    "name": "vocab_list",
-                    "schema": {
-                        "type": "object",
-                        "additionalProperties": False,
-                        "properties": WORD_SCHEMA,
-                        "required": ["vocab"]
-                    },
-                    "strict": True
-                }
-            },
+            response_format=VocabResponse,
         )
-        
+
         # 記錄 token 使用量
         if hasattr(res, 'usage') and res.usage:
             usage = res.usage
@@ -279,16 +226,14 @@ class GPTClient:
             completion_tokens = getattr(usage, 'completion_tokens', 0)
             total_tokens = getattr(usage, 'total_tokens', 0)
             logger.log(LogLevel.INFO, f"Token 使用量 - 輸入: {prompt_tokens}, 輸出: {completion_tokens}, 總計: {total_tokens}")
-        
-        raw = res.choices[0].message.content
-        try:
-            obj = json.loads(raw)
-            vocab_list = obj.get("vocab", [])
-            logger.log(LogLevel.SUCCESS, f"✅ 成功生成 {len(vocab_list)} 個單字")
-            return vocab_list
-        except json.JSONDecodeError:
-            logger.log(LogLevel.ERROR, f"GPT 回傳非合法 JSON，原始輸出：\n{raw}")
+
+        parsed = res.choices[0].message.parsed
+        if parsed is None:
+            logger.log(LogLevel.ERROR, "GPT 回傳解析失敗")
             return []
+        vocab_list = [card.model_dump() for card in parsed.vocab]
+        logger.log(LogLevel.SUCCESS, f"✅ 成功生成 {len(vocab_list)} 個單字")
+        return vocab_list
     
     def generate_grammar_list(self, prompt: str = GRAMMAR_PROMPT):
         """
@@ -302,24 +247,12 @@ class GPTClient:
         """
         logger.log(LogLevel.INFO, "正在生成文法...")
         
-        res = self.client.chat.completions.create(
+        res = self.client.beta.chat.completions.parse(
             model=self.model,
             messages=[{"role": "user", "content": [{"type": "text", "text": prompt}]}],
-            response_format={
-                "type": "json_schema",
-                "json_schema": {
-                    "name": "grammar_list",
-                    "schema": {
-                        "type": "object",
-                        "additionalProperties": False,
-                        "properties": GRAMMAR_SCHEMA,
-                        "required": ["grammar"]
-                    },
-                    "strict": True
-                }
-            },
+            response_format=GrammarResponse,
         )
-        
+
         # 記錄 token 使用量
         if hasattr(res, 'usage') and res.usage:
             usage = res.usage
@@ -327,16 +260,14 @@ class GPTClient:
             completion_tokens = getattr(usage, 'completion_tokens', 0)
             total_tokens = getattr(usage, 'total_tokens', 0)
             logger.log(LogLevel.INFO, f"Token 使用量 - 輸入: {prompt_tokens}, 輸出: {completion_tokens}, 總計: {total_tokens}")
-        
-        raw = res.choices[0].message.content
-        try:
-            obj = json.loads(raw)
-            grammar_list = obj.get("grammar", [])
-            logger.log(LogLevel.SUCCESS, f"✅ 成功生成 {len(grammar_list)} 個文法")
-            return grammar_list
-        except json.JSONDecodeError:
-            logger.log(LogLevel.ERROR, f"GPT 回傳非合法 JSON，原始輸出：\n{raw}")
+
+        parsed = res.choices[0].message.parsed
+        if parsed is None:
+            logger.log(LogLevel.ERROR, "GPT 回傳解析失敗")
             return []
+        grammar_list = [card.model_dump() for card in parsed.grammar]
+        logger.log(LogLevel.SUCCESS, f"✅ 成功生成 {len(grammar_list)} 個文法")
+        return grammar_list
     
     def to_json(self, data: List[Dict], *, mode: str = "vocab", deck_name: str | None = None,
                 source_lang: str | None = None, target_lang: str | None = None,

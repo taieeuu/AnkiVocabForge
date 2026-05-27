@@ -104,6 +104,8 @@ BASIC_FIELDS = [
     {"name": "Ex2_trans"},
     {"name": "Audio"},
     {"name": "Hint"},
+    {"name": "Notes"},
+    {"name": "Mnemonic"},
 ]
 
 BASIC_TEMPLATES = [
@@ -133,6 +135,18 @@ BASIC_TEMPLATES = [
     <div class="example-trans">{{Ex2_trans}}</div>
 </div>
 {{/Ex2_ori}}
+{{#Notes}}
+<div class="info-block info-block-notes">
+    <div class="info-label">Notes</div>
+    <div class="info-content">{{Notes}}</div>
+</div>
+{{/Notes}}
+{{#Mnemonic}}
+<div class="info-block info-block-mnemonic">
+    <div class="info-label">Mnemonic</div>
+    <div class="info-content">{{Mnemonic}}</div>
+</div>
+{{/Mnemonic}}
 """,
     },
     {
@@ -160,6 +174,18 @@ BASIC_TEMPLATES = [
 </div>
 {{/Ex2_ori}}
 {{#Audio}}<div class="section">{{Audio}}</div>{{/Audio}}
+{{#Notes}}
+<div class="info-block info-block-notes">
+    <div class="info-label">Notes</div>
+    <div class="info-content">{{Notes}}</div>
+</div>
+{{/Notes}}
+{{#Mnemonic}}
+<div class="info-block info-block-mnemonic">
+    <div class="info-label">Mnemonic</div>
+    <div class="info-content">{{Mnemonic}}</div>
+</div>
+{{/Mnemonic}}
 """,
     },
 ]
@@ -289,6 +315,23 @@ BASIC_CSS = """
 .card.night_mode .info-block-usage .info-label    { color: #fbbf24; }
 .card.night_mode .info-block-contrast     { background: rgba(88,28,135,0.2);  border-color: rgba(107,33,168,0.3); }
 .card.night_mode .info-block-contrast .info-label { color: #c084fc; }
+
+.info-block-notes {
+    background: #eff6ff;
+    border: 1px solid #bfdbfe;
+}
+.info-block-notes .info-label { color: #2563eb; }
+
+.info-block-mnemonic {
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+}
+.info-block-mnemonic .info-label { color: #16a34a; }
+
+.card.night_mode .info-block-notes        { background: rgba(37,99,235,0.15);  border-color: rgba(37,99,235,0.3); }
+.card.night_mode .info-block-notes .info-label    { color: #93c5fd; }
+.card.night_mode .info-block-mnemonic     { background: rgba(22,163,74,0.15);  border-color: rgba(22,163,74,0.3); }
+.card.night_mode .info-block-mnemonic .info-label { color: #86efac; }
 """
 
 CLOZE_FIELDS = [
@@ -303,6 +346,8 @@ CLOZE_FIELDS = [
     {"name": "Ex2_trans"},
     {"name": "Audio"},
     {"name": "Hint"},
+    {"name": "Notes"},
+    {"name": "Mnemonic"},
 ]
 
 CLOZE_TEMPLATES = [

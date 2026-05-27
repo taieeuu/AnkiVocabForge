@@ -50,6 +50,4 @@ export interface Card {
   ex2_ori: string;
   ex2_trans: string;
   hint: string;
-  notes?: string;
-  mnemonic?: string;
 }

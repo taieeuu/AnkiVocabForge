@@ -33,7 +33,7 @@ class AnkiLogic:
     # ---------------- Deck & Note functions ----------------
 
     def create_anki_note(
-        self,
+        self, 
         model,
         word: str,
         pos: str,
@@ -45,12 +45,11 @@ class AnkiLogic:
         ex2_trans: str,
         audio: str = "",
         hint: str = "",
-        notes: str = "",
-        mnemonic: str = "",
     ):
         """建立 Anki note"""
         audio_filename = os.path.basename(audio) if audio else ""
 
+        # 確保所有字段都是字符串，將 None 轉換為空字符串
         fields = [
             str(word) if word is not None else "",
             str(pos) if pos is not None else "",
@@ -62,11 +61,12 @@ class AnkiLogic:
             str(ex2_trans) if ex2_trans is not None else "",
             f"[sound:{audio_filename}]" if audio else "",
             str(hint) if hint is not None else "",
-            str(notes) if notes is not None else "",
-            str(mnemonic) if mnemonic is not None else "",
         ]
 
-        note = genanki.Note(model=model, fields=fields)
+        note = genanki.Note(
+            model=model,
+            fields=fields
+        )
 
         # 如果提供了 audio，加入 media_files（只添加存在的文件，使用绝对路径）
         if audio:
@@ -136,7 +136,7 @@ class AnkiLogic:
     def create_cloze_note(
         self,
         model,
-        text: str = "",
+        text: str = "",  # Cloze 格式的文本（包含兩個例句和翻譯）
         word: str = "",
         pos: str = "",
         meaning: str = "",
@@ -147,30 +147,46 @@ class AnkiLogic:
         ex2_trans: str = "",
         audio: str = "",
         hint: str = "",
-        notes: str = "",
-        mnemonic: str = "",
     ):
-        """建立 Cloze 類型的 Anki note"""
+        """
+        建立 Cloze 類型的 Anki note（可輸入單字版本）
+        
+        Args:
+            model: Anki model
+            text: Cloze 格式的文本（包含兩個例句和翻譯）
+            word: 單字（用於輸入驗證和答案顯示）
+            pos: 詞性
+            meaning: 單字意思
+            synonyms: 同義詞
+            ex1_ori: 第一句例句（來源語言）
+            ex1_trans: 第一句例句翻譯（目標語言）
+            ex2_ori: 第二句例句（來源語言）
+            ex2_trans: 第二句例句翻譯（目標語言）
+            audio: 語音檔案路徑
+            hint: 提示
+        """
         audio_filename = os.path.basename(audio) if audio else ""
-
+        
+        # 確保所有字段都是字符串，將 None 轉換為空字符串
         fields = [
-            str(text) if text is not None else "",
-            str(word) if word is not None else "",
-            str(pos) if pos is not None else "",
+            str(text) if text is not None else "",  # Cloze 格式的文本（包含兩個例句和翻譯）
+            str(word) if word is not None else "",  # 單字
+            str(pos) if pos is not None else "",   # 詞性
             str(meaning) if meaning is not None else "",
             str(synonyms) if synonyms is not None else "",
             str(ex1_ori) if ex1_ori is not None else "",
             str(ex1_trans) if ex1_trans is not None else "",
             str(ex2_ori) if ex2_ori is not None else "",
             str(ex2_trans) if ex2_trans is not None else "",
-            f"[sound:{audio_filename}]" if audio else "",
+            f"[sound:{audio_filename}]" if audio else "",  # Audio
             str(hint) if hint is not None else "",
-            str(notes) if notes is not None else "",
-            str(mnemonic) if mnemonic is not None else "",
         ]
-
-        note = genanki.Note(model=model, fields=fields)
-
+        
+        note = genanki.Note(
+            model=model,
+            fields=fields
+        )
+        
         # 如果提供了 audio，加入 media_files（只添加存在的文件，使用绝对路径）
         if audio:
             audio_path = os.path.abspath(audio) if not os.path.isabs(audio) else audio
@@ -178,7 +194,7 @@ class AnkiLogic:
                 self.media_files.append(audio_path)
             else:
                 logger.log(LogLevel.WARNING, f"Audio file not found, skipping: {audio_path}")
-
+        
         return note
     
     def create_grammar_note(

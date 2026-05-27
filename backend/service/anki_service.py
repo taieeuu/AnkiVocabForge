@@ -71,12 +71,10 @@ class AnkiService:
                 ex2_trans=v.get("ex2_trans") or "",
                 audio=audio_path,
                 hint=v.get("hint") or "",
-                notes=v.get("notes") or "",
-                mnemonic=v.get("mnemonic") or "",
             )
             logic.create_anki_card(note)
         logger.log(LogLevel.INFO, f"✅ 已建立 {len(vocab_list)} 個 notes")
-
+            
         # 產生 .apkg 檔案
         logger.log(LogLevel.INFO, "打包 .apkg 檔案...")
         logic.to_pack(output_dir=session_dir)
@@ -118,12 +116,10 @@ class AnkiService:
                 ex2_trans=v.get("ex2_trans") or "",
                 audio=audio_path,
                 hint=v.get("hint") or "",
-                notes=v.get("notes") or "",
-                mnemonic=v.get("mnemonic") or "",
             )
             logic.create_anki_card(note)
         logger.log(LogLevel.INFO, f"✅ 已建立 {len(vocab_list)} 個 notes")
-
+            
         # 產生 .apkg 檔案
         logger.log(LogLevel.INFO, "打包 .apkg 檔案...")
         logic.to_pack()
@@ -189,12 +185,10 @@ class AnkiService:
                 ex2_trans=ex2_trans,
                 audio=audio_path,
                 hint=v.get("hint", ""),
-                notes=v.get("notes") or "",
-                mnemonic=v.get("mnemonic") or "",
             )
             logic.create_anki_card(note)
         logger.log(LogLevel.INFO, f"✅ 已建立 {len(vocab_list)} 個 Cloze notes")
-
+        
         # 產生 .apkg 檔案
         logger.log(LogLevel.INFO, "打包 .apkg 檔案...")
         logic.to_pack()
@@ -236,38 +230,36 @@ class AnkiService:
                 ex2_trans=v.get("ex2_trans") or "",
                 audio=audio_path,
                 hint=v.get("hint") or "",
-                notes=v.get("notes") or "",
-                mnemonic=v.get("mnemonic") or "",
             )
             logic.create_anki_card(note)
         logger.log(LogLevel.INFO, f"✅ 已建立 {len(vocab_list)} 個 Basic notes")
-
+        
         # 建立 Cloze model 並產生 notes
         logger.log(LogLevel.INFO, "建立 Anki Cloze model 與 notes...")
         cloze_model = logic.get_or_create_cloze_model()
-
+        
         for v in vocab_list:
             word = v.get("word") or ""
             ex1_ori = v.get("ex1_ori") or ""
             ex1_trans = v.get("ex1_trans") or ""
             ex2_ori = v.get("ex2_ori") or ""
             ex2_trans = v.get("ex2_trans") or ""
-
+            
             # 將兩個例句中的單字轉換為 Cloze 格式
             import re
-
+            
             # 處理第一個例句
             cloze_ex1 = ex1_ori
             if word and ex1_ori:
                 pattern = re.compile(re.escape(word), re.IGNORECASE)
                 cloze_ex1 = pattern.sub(f"{{{{c1::{word}}}}}", ex1_ori, count=1)
-
+            
             # 處理第二個例句
             cloze_ex2 = ex2_ori
             if word and ex2_ori:
                 pattern = re.compile(re.escape(word), re.IGNORECASE)
                 cloze_ex2 = pattern.sub(f"{{{{c1::{word}}}}}", ex2_ori, count=1)
-
+            
             # 將兩個例句和翻譯組合成一個 Text 欄位
             cloze_text = f"{cloze_ex1}\n{ex1_trans}\n\n{cloze_ex2}\n{ex2_trans}" if cloze_ex2 else f"{cloze_ex1}\n{ex1_trans}"
             logger.log(LogLevel.DEBUG, f"cloze_text: {cloze_text}")
@@ -287,12 +279,10 @@ class AnkiService:
                 ex2_trans=ex2_trans,
                 audio=audio_path,
                 hint=v.get("hint", ""),
-                notes=v.get("notes") or "",
-                mnemonic=v.get("mnemonic") or "",
             )
             logic.create_anki_card(note)
         logger.log(LogLevel.INFO, f"✅ 已建立 {len(vocab_list)} 個 Cloze notes")
-
+        
         # 產生 .apkg 檔案（包含兩種卡片）
         logger.log(LogLevel.INFO, "打包 .apkg 檔案...")
         logic.to_pack()
@@ -380,12 +370,10 @@ class AnkiService:
                 ex2_trans=ex2_trans,
                 audio=audio_path,
                 hint=v.get("hint", ""),
-                notes=v.get("notes") or "",
-                mnemonic=v.get("mnemonic") or "",
             )
             logic.create_anki_card(note)
         logger.log(LogLevel.INFO, f"✅ 已建立 {len(vocab_list)} 個 Cloze notes")
-
+        
         # 產生 .apkg 檔案
         logger.log(LogLevel.INFO, "打包 .apkg 檔案...")
         logic.to_pack(output_dir=session_dir)
@@ -449,38 +437,36 @@ class AnkiService:
                 ex2_trans=v.get("ex2_trans") or "",
                 audio=audio_path,
                 hint=v.get("hint") or "",
-                notes=v.get("notes") or "",
-                mnemonic=v.get("mnemonic") or "",
             )
             logic.create_anki_card(note)
         logger.log(LogLevel.INFO, f"✅ 已建立 {len(vocab_list)} 個 Basic notes")
-
+        
         # 建立 Cloze model 並產生 notes
         logger.log(LogLevel.INFO, "建立 Anki Cloze model 與 notes...")
         cloze_model = logic.get_or_create_cloze_model()
-
+        
         for v in vocab_list:
             word = v.get("word") or ""
             ex1_ori = v.get("ex1_ori") or ""
             ex1_trans = v.get("ex1_trans") or ""
             ex2_ori = v.get("ex2_ori") or ""
             ex2_trans = v.get("ex2_trans") or ""
-
+            
             # 將兩個例句中的單字轉換為 Cloze 格式
             import re
-
+            
             # 處理第一個例句
             cloze_ex1 = ex1_ori
             if word and ex1_ori:
                 pattern = re.compile(re.escape(word), re.IGNORECASE)
                 cloze_ex1 = pattern.sub(f"{{{{c1::{word}}}}}", ex1_ori, count=1)
-
+            
             # 處理第二個例句
             cloze_ex2 = ex2_ori
             if word and ex2_ori:
                 pattern = re.compile(re.escape(word), re.IGNORECASE)
                 cloze_ex2 = pattern.sub(f"{{{{c1::{word}}}}}", ex2_ori, count=1)
-
+            
             # 將兩個例句和翻譯組合成一個 Text 欄位
             cloze_text = f"{cloze_ex1}\n{ex1_trans}\n\n{cloze_ex2}\n{ex2_trans}" if cloze_ex2 else f"{cloze_ex1}\n{ex1_trans}"
             logger.log(LogLevel.DEBUG, f"cloze_text: {cloze_text}")
@@ -500,8 +486,6 @@ class AnkiService:
                 ex2_trans=ex2_trans,
                 audio=audio_path,
                 hint=v.get("hint", ""),
-                notes=v.get("notes") or "",
-                mnemonic=v.get("mnemonic") or "",
             )
             logic.create_anki_card(note)
         logger.log(LogLevel.INFO, f"✅ 已建立 {len(vocab_list)} 個 Cloze notes")
